@@ -1,0 +1,118 @@
+/* Template CSS Overrides */
+/* Fixes for conflicts between Tailwind CSS and template CSS */
+
+/* Ensure template styles work with Tailwind */
+.ps-container {
+  @apply max-w-screen-xl mx-auto px-4;
+}
+
+.ps-container-fluid {
+  @apply w-full px-4;
+}
+
+/* Template buttons compatibility */
+.ps-btn {
+  @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors;
+}
+
+/* Template specific overrides */
+.header {
+  position: relative;
+  z-index: 1000;
+}
+
+.ps-footer {
+  margin-top: auto;
+}
+
+/* Fix template font loading */
+.exist-search:before,
+.exist-user:before,
+.exist-minicart:before {
+  font-family: 'exist-font' !important;
+}
+
+/* Mobile menu fixes */
+.header--sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100vh;
+  background: white;
+  transition: left 0.3s ease;
+  z-index: 9999;
+}
+
+.header--sidebar.active {
+  left: 0;
+}
+
+/* Search overlay fixes */
+.ps-searchbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Back to top button fixes */
+#back2top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: #333;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+#back2top:hover {
+  background: #555;
+}
+
+/* Loading spinner */
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.ps-loading .loader {
+  display: flex;
+}
+
+.ps-loading.loaded .loader {
+  display: none;
+}
+
+/* Responsive helpers */
+@media (max-width: 768px) {
+  .ps-container {
+    @apply px-2;
+  }
+  
+  .ps-container-fluid {
+    @apply px-2;
+  }
+}
