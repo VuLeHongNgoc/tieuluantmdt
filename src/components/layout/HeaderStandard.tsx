@@ -111,38 +111,14 @@ export function HeaderStandard({
           {/* Center - Navigation Menu */}
           <div className="center">
             <ul className="menu">
-              <li className="menu-item-has-children dropdown">
+              <li>
                 <Link href="/">Home</Link>
-                <ul className="sub-menu">
-                  <li><Link href="/">Homepage #1</Link></li>
-                  <li><Link href="/homepage-2">Homepage #2</Link></li>
-                  <li><Link href="/homepage-3">Homepage #3</Link></li>
-                  <li><Link href="/homepage-4">Homepage #4</Link></li>
-                  <li><Link href="/homepage-5">Homepage #5</Link></li>
-                  <li><Link href="/homepage-6">Homepage #6</Link></li>
-                  <li><Link href="/homepage-7">Homepage #7</Link></li>
-                  <li><Link href="/homepage-8">Homepage #8</Link></li>
-                  <li><Link href="/homepage-9">Homepage #9</Link></li>
-                  <li><Link href="/homepage-10">Homepage #10</Link></li>
-                  <li><Link href="/homepage-11">Homepage #11</Link></li>
-                  <li><Link href="/homepage-12">Homepage #12</Link></li>
-                </ul>
               </li>
-              <li><Link href="/shop">Shop</Link></li>
-              <li><Link href="/pages">Pages</Link></li>
-              <li><Link href="/features">Features</Link></li>
-              <li className="menu-item-has-children dropdown">
-                <Link href="/blog">Blog</Link>
-                <ul className="sub-menu">
-                  <li className="menu-item-has-children dropdown">
-                    <Link href="/blog-grid">Blog-grid</Link>
-                    <ul className="sub-menu">
-                      <li><Link href="/blog-grid">Blog Grid 1</Link></li>
-                      <li><Link href="/blog-grid-2">Blog Grid 2</Link></li>
-                    </ul>
-                  </li>
-                  <li><Link href="/blog-list">Blog List</Link></li>
-                </ul>
+              <li>
+                <Link href="/shop">Shop</Link>
+              </li>
+              <li>
+                <Link href="/contact">Contact</Link>
               </li>
             </ul>
           </div>
@@ -330,13 +306,15 @@ export function HeaderStandard({
           </div>
           <div className="ps-navigation__content">
             <ul className="menu--mobile">
-              <li className="menu-item-has-children">
+              <li>
                 <Link href="/">Home</Link>
               </li>
-              <li><Link href="/shop">Shop</Link></li>
-              <li><Link href="/pages">Pages</Link></li>
-              <li><Link href="/features">Features</Link></li>
-              <li><Link href="/blog">Blog</Link></li>
+              <li>
+                <Link href="/shop">Shop</Link>
+              </li>
+              <li>
+                <Link href="/contact">Contact</Link>
+              </li>
             </ul>
           </div>
         </div>

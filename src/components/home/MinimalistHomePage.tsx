@@ -162,7 +162,7 @@ export default function MinimalistHomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map((product) => (
-              <div key={product.id} className="group cursor-pointer">
+              <a href={`/product/${product.id}`} key={product.id} className="group cursor-pointer">
                 <div className="relative aspect-square bg-white mb-4 overflow-hidden">
                   <img
                     src={product.image}
@@ -182,7 +182,7 @@ export default function MinimalistHomePage() {
                     {formatPrice(product.price)}
                   </p>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
 

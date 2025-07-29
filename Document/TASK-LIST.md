@@ -84,35 +84,35 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
 
 ### ✅ Chi tiết sản phẩm (Product.html → src/app/product/[id]/page.tsx)
 
-- [ ] **T028** - Convert Product.html sang Next.js với đầy đủ template functionality
-  - [ ] **T028A** - Convert product image gallery và zoom functionality
-  - [ ] **T028B** - Convert product information section (title, price, rating, description)
-  - [ ] **T028C** - Convert product variants selector (size, color)
-  - [ ] **T028D** - Convert "Add to cart" và quantity selector
-  - [ ] **T028E** - Convert product tabs (Description, Reviews, Additional Info)
-  - [ ] **T028F** - Convert related products carousel
-  - [ ] **T028G** - Convert product sharing buttons
+- [x] **T028** - Rewrite Product.html sang Next.js với thiết kế minimalist ✅
+  - [x] **T028A** - Redesign product image gallery và zoom functionality ✅
+  - [x] **T028B** - Redesign product information section (title, price, rating, description) ✅
+  - [x] **T028C** - Redesign product variants selector (size, color) ✅
+  - [x] **T028D** - Redesign "Add to cart" và quantity selector ✅
+  - [x] **T028E** - Redesign product tabs (Description, Reviews, Additional Info) ✅
+  - [x] **T028F** - Redesign related products với grid layout ✅
+  - [x] **T028G** - Redesign product sharing buttons ✅
 
 ### ✅ Trang khác từ User-Template
 
-- [ ] **T034** - Convert OurTeam.html → src/app/about/page.tsx
+- [ ] **T034** - Convert OurTeam.html → src/app/about/page.tsx (REMOVED)
   - [ ] **T034A** - Convert team members grid
   - [ ] **T034B** - Convert company story section
   - [ ] **T034C** - Convert company values/mission section
-- [ ] **T035** - Convert Contact.html → src/app/contact/page.tsx
-  - [ ] **T035A** - Convert contact form với validation
-  - [ ] **T035B** - Convert company info và location map
-  - [ ] **T035C** - Convert contact methods section
-- [ ] **T036** - Tạo Cart page → src/app/cart/page.tsx (dựa trên mini-cart template)
-  - [ ] **T036A** - Convert cart items list với quantity controls
-  - [ ] **T036B** - Convert cart totals và coupon section
-  - [ ] **T036C** - Convert shipping calculator
-- [ ] **T037** - Tạo Checkout page → src/app/checkout/page.tsx
-  - [ ] **T037A** - Convert billing/shipping forms
-  - [ ] **T037B** - Convert payment methods selection
-  - [ ] **T037C** - Convert order summary section
-- [ ] **T038** - Tạo 404 page → src/app/not-found.tsx với template style
-- [x] **T039** - Template assets đã được copy vào Next.js project
+- [x] **T035** - Convert Contact.html → src/app/contact/page.tsx ✅
+  - [x] **T035A** - Convert contact form với validation ✅
+  - [x] **T035B** - Convert company info và location map ✅
+  - [x] **T035C** - Convert contact methods section ✅
+- [x] **T036** - Tạo Cart page → src/app/cart/page.tsx (dựa trên mini-cart template) ✅
+  - [x] **T036A** - Convert cart items list với quantity controls ✅
+  - [x] **T036B** - Convert cart totals và coupon section ✅
+  - [x] **T036C** - Convert shipping calculator ✅
+- [x] **T037** - Tạo Checkout page → src/app/checkout/page.tsx ✅
+  - [x] **T037A** - Convert billing/shipping forms ✅
+  - [x] **T037B** - Convert payment methods selection ✅
+  - [x] **T037C** - Convert order summary section ✅
+- [ ] **T038** - Tạo 404 page → src/app/not-found.tsx với template style (REMOVED)
+- [x] **T039** - Template assets đã được copy vào Next.js project (REMOVED)
 
 ---
 
@@ -281,10 +281,10 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
 - [x] T012-T016: Layout & Components ✅ (5/5 tasks completed)
 - [x] T017-T021: Homepage-2 conversion ✅ (5/5 tasks completed) 
 - [x] T022: Shop page conversion ✅ (6/6 subtasks completed)
-- [ ] T028: Product detail conversion (0/7 subtasks)  
-- [ ] T034-T038: Other pages conversion (0/12 subtasks)
+- [x] T028: Product detail redesign ✅ (7/7 subtasks completed)  
+- [x] T035-T037: Contact, Cart, Checkout pages ✅ (9/9 subtasks completed)
 
-**Current Focus:** Shop-Default.html conversion COMPLETED! Ready for Product.html conversion
+**Current Focus:** Frontend phase nearly complete! Contact, Cart, and Checkout pages implemented.
 
 ### Week 4-5: Backend & API
 
@@ -429,6 +429,15 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
   - jQuery plugins integration với useEffect hooks
   - Component structure: src/app/shop/page.tsx → src/components/shop/
   - Fully functional shop page tương thích với Next.js
+
+- **T035-T037** ✅ Contact, Cart, and Checkout pages implemented (July 29, 2025)
+  - T035 ✅ Contact page with form validation, Google Maps integration, and company info
+  - T036 ✅ Cart page with quantity controls, coupon application, and shipping calculator
+  - T037 ✅ Checkout page with billing/shipping forms, payment method selection, and order summary
+  - Clean, modern UI designs following template styles
+  - Client-side form validation with detailed error messages
+  - Responsive layouts for all screen sizes
+  - Integration-ready for backend functionality
 
 ### 🚀 **Current Status:**
 

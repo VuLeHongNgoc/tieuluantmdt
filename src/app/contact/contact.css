@@ -1,0 +1,53 @@
+/* Contact Page custom styles */
+.contact-page {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.contact-page .ps-contact {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.contact-page .ps-contact__left,
+.contact-page .ps-contact__right {
+  width: 50%;
+}
+
+.contact-page .ps-contact__right {
+  padding: 150px 30px;
+}
+
+.contact-page .ps-contact__info {
+  max-width: 570px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-page .ps-contact #contact-map {
+  height: 560px;
+  width: 100%;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+  .contact-page .ps-contact__left,
+  .contact-page .ps-contact__right {
+    width: 100%;
+  }
+  
+  .contact-page .ps-contact #contact-map {
+    height: 500px;
+  }
+  
+  .contact-page .ps-contact__right {
+    padding: 50px 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .contact-page .ps-contact #contact-map {
+    height: 300px;
+  }
+}
