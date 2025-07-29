@@ -120,19 +120,45 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
 
 ### ✅ Database Models
 
-- [ ] **T040** - Implement User model (Backend/models/User.js)
-- [ ] **T041** - Implement Product model (Backend/models/Product.js)
-- [ ] **T042** - Implement Category model (Backend/models/Category.js)
-- [ ] **T043** - Implement Cart model (Backend/models/Cart.js)
-- [ ] **T044** - Implement Order model (Backend/models/Order.js)
+- [x] **T040** - Implement User model (Backend/models/User.js) ✅
+- [x] **T041** - Implement Product model (Backend/models/Product.js) ✅
+- [x] **T042** - Implement Category model (Backend/models/Category.js) ✅
+- [x] **T043** - Implement Cart model (Backend/models/Cart.js) ✅
+- [x] **T044** - Implement Order model (Backend/models/Order.js) ✅
 
 ### ✅ API Routes
 
 - [ ] **T045** - API routes cho Products (CRUD)
+  - [ ] **T045A** - GET /api/products - Get all products with filters (pagination, category, search)
+  - [ ] **T045B** - GET /api/products/[id] - Get single product
+  - [ ] **T045C** - POST /api/products - Create product (Admin)
+  - [ ] **T045D** - PUT /api/products/[id] - Update product (Admin)
+  - [ ] **T045E** - DELETE /api/products/[id] - Delete product (Admin)
 - [ ] **T046** - API routes cho Categories
+  - [ ] **T046A** - GET /api/categories - Get all categories
+  - [ ] **T046B** - GET /api/categories/[id] - Get single category with products
+  - [ ] **T046C** - POST /api/categories - Create category (Admin)
+  - [ ] **T046D** - PUT /api/categories/[id] - Update category (Admin)
+  - [ ] **T046E** - DELETE /api/categories/[id] - Delete category (Admin)
+  - [ ] **T046F** - GET /api/brands - Get all brands
 - [ ] **T047** - API routes cho Cart operations
+  - [ ] **T047A** - GET /api/cart - Get cart for current user
+  - [ ] **T047B** - POST /api/cart/items - Add item to cart
+  - [ ] **T047C** - PUT /api/cart/items/[id] - Update cart item quantity
+  - [ ] **T047D** - DELETE /api/cart/items/[id] - Remove item from cart
+  - [ ] **T047E** - POST /api/cart/coupon - Apply coupon code
 - [ ] **T048** - API routes cho Orders
+  - [ ] **T048A** - GET /api/orders - Get user orders
+  - [ ] **T048B** - GET /api/orders/[id] - Get order details
+  - [ ] **T048C** - POST /api/orders - Create order from cart
+  - [ ] **T048D** - PUT /api/orders/[id]/status - Update order status (Admin)
+  - [ ] **T048E** - GET /api/orders/stats - Get order statistics (Admin)
 - [ ] **T049** - API routes cho Users
+  - [ ] **T049A** - GET /api/users/profile - Get current user profile
+  - [ ] **T049B** - PUT /api/users/profile - Update user profile
+  - [ ] **T049C** - GET /api/users - Get all users (Admin)
+  - [ ] **T049D** - GET /api/users/[id] - Get user by ID (Admin)
+  - [ ] **T049E** - PUT /api/users/[id] - Update user (Admin)
 
 ### ✅ Authentication
 
@@ -309,7 +335,7 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
   - App Router structure (src/app/)
   - TypeScript configuration with path aliases
   - Tailwind CSS with PostCSS (Fixed compatibility issues)
-  - Development server running at localhost:3001
+  - Development server running at localhost:3000
   - Hot reload working
   - Homepage with responsive design
 - **T003** ✅ ESLint và Prettier cấu hình hoàn tất
