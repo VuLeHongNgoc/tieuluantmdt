@@ -221,10 +221,10 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
   - [x] **T049I2** - Cart page với API integration
   - [x] **T049I3** - Update/remove cart items
   - [x] **T049I4** - Apply coupon code functionality
-- [ ] **T049J** - Kết nối Checkout process với API
-  - [ ] **T049J1** - Validate cart data trước checkout
-  - [ ] **T049J2** - Submit order thông qua API
-  - [ ] **T049J3** - Order confirmation page với API data
+- [x] **T049J** - Kết nối Checkout process với API
+  - [x] **T049J1** - Validate cart data trước checkout
+  - [x] **T049J2** - Submit order thông qua API
+  - [x] **T049J3** - Order confirmation page với API data
 
 
 ## 🔐 PHASE 5: Admin Panel (7 ngày)

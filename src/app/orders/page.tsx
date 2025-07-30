@@ -1,10 +1,12 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface OrderItem {
-  id: string;
+  _id: string;
+  productId: string;
+  variantId: string;
   productName: string;
   color: string;
   size: string;
@@ -14,7 +16,8 @@ interface OrderItem {
 }
 
 interface Order {
-  id: string;
+  _id: string;
+  userId: string;
   status: 'PENDING' | 'PREPARING' | 'SHIPPING' | 'DELIVERED' | 'CANCELLED';
   total: number;
   items: OrderItem[];
@@ -29,84 +32,38 @@ interface Order {
   updatedAt: string;
 }
 
-// Sample data - sẽ được thay thế bằng API call
-const sampleOrders: Order[] = [
-  {
-    id: 'order-001',
-    status: 'DELIVERED',
-    total: 3300000,
-    items: [
-      {
-        id: 'order-item-001',
-        productName: 'Áo thun Nike Classic',
-        color: 'Đen',
-        size: 'M',
-        quantity: 2,
-        unitPrice: 450000,
-        imageUrl: '/images/product/product-1.jpg',
-      },
-      {
-        id: 'order-item-002',
-        productName: 'Nike Air Max 90',
-        color: 'Đen',
-        size: '40',
-        quantity: 1,
-        unitPrice: 2850000,
-        imageUrl: '/images/product/product-2.jpg',
-      },
-    ],
-    customerInfo: {
-      name: 'Nguyễn Văn A',
-      email: 'user1@gmail.com',
-      phone: '0987654321',
-      address: '123 Nguyễn Huệ, Quận 1, TP.HCM',
-    },
-    paymentMethod: 'MOMO',
-    createdAt: '2025-07-23T10:30:00Z',
-    updatedAt: '2025-07-25T14:20:00Z',
-  },
-  {
-    id: 'order-002',
-    status: 'SHIPPING',
-    total: 33740000,
-    items: [
-      {
-        id: 'order-item-003',
-        productName: 'Váy Zara Summer Collection',
-        color: 'Xanh',
-        size: 'S',
-        quantity: 1,
-        unitPrice: 750000,
-        imageUrl: '/images/product/product-3.jpg',
-      },
-      {
-        id: 'order-item-004',
-        productName: 'iPhone 15 Pro Max',
-        color: 'Đen Titanium',
-        size: '128GB',
-        quantity: 1,
-        unitPrice: 32990000,
-        imageUrl: '/images/product/product-4.jpg',
-      },
-    ],
-    customerInfo: {
-      name: 'Trần Thị B',
-      email: 'user2@gmail.com',
-      phone: '0909123456',
-      address: '456 Lê Lợi, Quận 3, TP.HCM',
-    },
-    paymentMethod: 'STRIPE',
-    createdAt: '2025-07-28T15:45:00Z',
-    updatedAt: '2025-07-29T09:15:00Z',
-  },
-];
-
 export default function OrdersPage() {
   const { data: session, status } = useSession();
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
-  const [orders] = useState<Order[]>(sampleOrders); // Sẽ được thay thế bằng API call
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  if (status === 'loading') {
+  // Fetch orders when session is loaded
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/orders');
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+      const data = await response.json();
+      console.log('Orders from API:', data);
+      setOrders(data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load orders when session changes or component mounts
+  useEffect(() => {
+    if (session) {
+      fetchOrders();
+    }
+  }, [session]);
+
+  if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -216,12 +173,12 @@ export default function OrdersPage() {
             </div>
           ) : (
             filteredOrders.map((order) => (
-              <div key={order.id} className="bg-white rounded-lg shadow-sm">
+              <div key={order._id} className="bg-white rounded-lg shadow-sm">
                 {/* Order Header */}
                 <div className="px-6 py-4 border-b border-gray-200">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center space-x-4">
-                      <h3 className="text-lg font-semibold text-gray-900">#{order.id}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">#{order._id}</h3>
                       {getStatusBadge(order.status)}
                     </div>
                     <div className="mt-2 sm:mt-0 text-sm text-gray-600">
@@ -235,7 +192,7 @@ export default function OrdersPage() {
                 <div className="px-6 py-4">
                   <div className="space-y-4">
                     {order.items.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4">
+                      <div key={item._id} className="flex items-center space-x-4">
                         <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
                           {item.imageUrl ? (
                             <img

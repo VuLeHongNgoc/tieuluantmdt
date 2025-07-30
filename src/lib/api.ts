@@ -356,7 +356,7 @@ export const endpoints = {
   cart: {
     get: (userId: string) => 
       api.get<Cart>(`/cart?userId=${userId}`),
-    addItem: (data: { userId: string, productId: string, quantity: number, variant?: { color?: string, size?: string } }) => 
+    addItem: (data: { userId: string, productId: string, quantity: number, variantId?: string, variant?: { color?: string, size?: string } }) => 
       api.post<Cart>('/cart/items', data),
     updateItem: (itemId: string, quantity: number, userId: string) => 
       api.put<Cart>(`/cart/items/${itemId}`, { quantity, userId }),

@@ -80,7 +80,7 @@ const AddToCartButton: React.FC<{
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[1]); // Default to Medium
+  const [selectedSize, setSelectedSize] = useState(product.sizes[0]); // Default to first size (usually S)
   const [quantity, setQuantity] = useState(1);
 
   // Function to get color class based on color name

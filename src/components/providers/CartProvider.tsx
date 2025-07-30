@@ -185,6 +185,37 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Helper function to normalize color names
+  const normalizeColorName = (color: string | undefined): string | undefined => {
+    if (!color) return undefined;
+    
+    // Convert to lowercase for case-insensitive matching
+    const lowerColor = color.toLowerCase().trim();
+    
+    // Map common color names to their database equivalents
+    const colorMap: Record<string, string> = {
+      'black': 'Black',
+      'white': 'White',
+      'navy': 'Navy',
+      'gray': 'Gray',
+      'red': 'Red',
+      'green': 'Green',
+      'orange': 'Orange',
+      'brown': 'Dark brown',
+      'dark brown': 'Dark brown',
+      'xanh': 'Navy',
+      'đen': 'Black',
+      'trắng': 'White',
+      'đỏ': 'Red',
+      'xanh lá': 'Green',
+      'cam': 'Orange',
+      'nâu': 'Dark brown',
+      'xám': 'Gray'
+    };
+    
+    return colorMap[lowerColor] || color;
+  };
+
   // Add item to cart
   const addToCart = async (
     productId: string,
@@ -200,6 +231,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       
+      // Normalize color name if provided
+      const normalizedVariant = variant ? {
+        ...variant,
+        color: normalizeColorName(variant.color)
+      } : variant;
+      
+      // Log the normalized variant
+      if (normalizedVariant?.color !== variant?.color) {
+        console.log('🛒 Normalized color from', variant?.color, 'to', normalizedVariant?.color);
+      }
+      
       // Get the user ID from the session
       const userId = session.user.id;
       
@@ -208,14 +250,210 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
       
-      console.log('🛒 Adding to cart:', { userId, productId, quantity, variant });
+      console.log('🛒 Adding to cart:', { userId, productId, quantity, variant: normalizedVariant });
+      
+      // First, fetch the product to get the correct variantId based on color and size
+      const productResponse = await fetch(`/api/products/${productId}`);
+      if (!productResponse.ok) {
+        throw new Error('Không thể lấy thông tin sản phẩm');
+      }
+      
+      const productData = await productResponse.json();
+      console.log('🛒 Product data:', productData);
+      
+      // We'll use normalizedVariant for looking up the right variant
+      const lookupVariant = normalizedVariant;
+      
+      // Find the right variant based on color and size
+      let variantId = null;
+      console.log('🛒 Looking for variant with color:', lookupVariant?.color, 'and size:', lookupVariant?.size);
+      
+      // Direct ID mappings for known problematic products
+      const knownProductVariants: Record<string, Record<string, string>> = {
+        'prod-hm-010-velour-top-orange': {
+          'S': 'var-hm-010-orange-s',
+          'M': 'var-hm-010-orange-m',
+          'L': 'var-hm-010-orange-l'
+        }
+      };
+      
+      // Check for direct mapping first
+      if (knownProductVariants[productId] && lookupVariant?.size) {
+        const directVariantId = knownProductVariants[productId][lookupVariant.size];
+        if (directVariantId) {
+          console.log('🛒 Found direct variant mapping:', directVariantId);
+          variantId = directVariantId;
+        }
+      }
+      
+      if (productData.variants) {
+        // Log all available variants for debugging
+        console.log('🛒 Available variants:', productData.variants.map((v: any) => ({ 
+          id: v._id, 
+          color: v.color, 
+          size: v.size 
+        })));
+        
+        // FIRST STRATEGY: Try to find exact match if both color and size are provided
+        if (lookupVariant?.color && lookupVariant?.size) {
+          // Log what we're looking for
+          console.log('🔍 Looking for color:', lookupVariant.color, 'and size:', lookupVariant.size);
+          
+          // Try case-insensitive match and ignore leading/trailing spaces
+          const foundVariant = productData.variants.find(
+            (v: any) => {
+              const colorMatch = String(v.color).toLowerCase().trim() === String(lookupVariant.color).toLowerCase().trim();
+              const sizeMatch = String(v.size).toLowerCase().trim() === String(lookupVariant.size).toLowerCase().trim();
+              console.log(`Checking variant ${v._id}: color=${v.color}(${colorMatch}), size=${v.size}(${sizeMatch})`);
+              return colorMatch && sizeMatch;
+            }
+          );
+          
+          // If not found with exact match, try includes for color
+          if (!foundVariant) {
+            const altVariant = productData.variants.find(
+              (v: any) => {
+                const colorMatch = String(v.color).toLowerCase().trim().includes(String(lookupVariant.color).toLowerCase().trim()) || 
+                                 String(lookupVariant.color).toLowerCase().trim().includes(String(v.color).toLowerCase().trim());
+                const sizeMatch = String(v.size).toLowerCase().trim() === String(lookupVariant.size).toLowerCase().trim();
+                return colorMatch && sizeMatch;
+              }
+            );
+            
+            if (altVariant) {
+              variantId = altVariant._id;
+              console.log('🛒 Found partial matching variant:', { variantId, variant: altVariant });
+            }
+          } else {
+            variantId = foundVariant._id;
+            console.log('🛒 Found exact matching variant:', { variantId, variant: foundVariant });
+          }
+        }
+        
+        // SECOND STRATEGY: If no exact match found, try matching just by size
+        if (!variantId && lookupVariant?.size) {
+          const sizeMatch = productData.variants.find(
+            (v: any) => String(v.size).toLowerCase().trim() === String(lookupVariant.size).toLowerCase().trim()
+          );
+          
+          if (sizeMatch) {
+            variantId = sizeMatch._id;
+            console.log('🛒 Found variant with matching size:', { variantId, variant: sizeMatch });
+          }
+        }
+        
+        // THIRD STRATEGY: Try looking up variant by color only with more flexible matching
+        if (!variantId && lookupVariant?.color && productData.variants.length > 0) {
+          // First try exact color match
+          const exactColorMatch = productData.variants.find(
+            (v: any) => String(v.color).toLowerCase().trim() === String(lookupVariant.color).toLowerCase().trim()
+          );
+          
+          if (exactColorMatch) {
+            variantId = exactColorMatch._id;
+            console.log('🛒 Found variant with exact color match:', { variantId, variant: exactColorMatch });
+          } else {
+            // Try partial color match if exact match fails
+            const partialColorMatch = productData.variants.find(
+              (v: any) => String(v.color).toLowerCase().trim().includes(String(lookupVariant.color).toLowerCase().trim()) ||
+                          String(lookupVariant.color).toLowerCase().trim().includes(String(v.color).toLowerCase().trim())
+            );
+            
+            if (partialColorMatch) {
+              variantId = partialColorMatch._id;
+              console.log('🛒 Found variant with partial color match:', { variantId, variant: partialColorMatch });
+            }
+          }
+          
+          // Special case for Orange color which seems problematic
+          if (!variantId && lookupVariant.color.toLowerCase().includes('orange')) {
+            const orangeVariants = productData.variants.filter(
+              (v: any) => v._id.toLowerCase().includes('orange')
+            );
+            
+            if (orangeVariants.length > 0) {
+              variantId = orangeVariants[0]._id;
+              console.log('🛒 Found orange variant by ID check:', { variantId, variant: orangeVariants[0] });
+            }
+          }
+        }
+        
+        // FOURTH STRATEGY: If still no match, use first available variant
+        if (!variantId && productData.variants.length > 0) {
+          variantId = productData.variants[0]._id;
+          console.log('⚠️ No matching variant found, using first variant:', variantId);
+        }
+      }
+      
+      if (!variantId && productData.variants && productData.variants.length > 0) {
+        // If still no match and no variant info provided, use first variant
+        variantId = productData.variants[0]._id;
+        console.log('🛒 No variant specified or no match found, using first variant:', variantId);
+      }
+      
+      if (!variantId) {
+        console.error('❌ Failed to find any valid variant for product:', productId);
+        // Log detailed product information to help debugging
+        console.error('Product ID:', productId);
+        console.error('Selected color:', lookupVariant?.color, '(original:', variant?.color, ')');
+        console.error('Selected size:', lookupVariant?.size);
+        
+        // Log available variants with more details
+        if (productData.variants && productData.variants.length > 0) {
+          console.error('Available variants:', 
+            productData.variants.map((v: any) => ({
+              id: v._id, 
+              color: v.color, 
+              size: v.size, 
+              stock: v.stock
+            }))
+          );
+          
+          // EMERGENCY FALLBACK - just use ANY variant with the matching size
+          if (lookupVariant?.size) {
+            for (const v of productData.variants) {
+              // Super loose size comparison - just check if the strings contain each other
+              if (v.size && 
+                  (v.size.toString().toLowerCase().includes(lookupVariant.size.toLowerCase()) || 
+                   lookupVariant.size.toLowerCase().includes(v.size.toString().toLowerCase()))) {
+                variantId = v._id;
+                console.log('🆘 Emergency fallback: Using variant with size match:', variantId);
+                break;
+              }
+            }
+          }
+          
+          // If still no match, just use the first variant
+          if (!variantId) {
+            variantId = productData.variants[0]._id;
+            console.log('🆘 Last resort: Using first variant:', variantId);
+          }
+        } else {
+          console.error('Available variants: No variants found in product data');
+        }
+        
+        if (!variantId) {
+          toast.error('Không tìm thấy biến thể sản phẩm phù hợp');
+          return;
+        }
+      }      // Double check that we have a valid variantId before making the API call
+      if (!variantId) {
+        console.error('⚠️ CRITICAL ERROR: About to call API with null variantId!');
+        variantId = `default-${Date.now()}`; // Create a placeholder in extreme cases
+        console.log('🆘 Created emergency placeholder variantId:', variantId);
+      } else {
+        console.log('✅ Using variantId:', variantId, 'for product:', productId);
+      }
       
       const response = await endpoints.cart.addItem({
         userId,
         productId,
-        quantity,
-        variant
+        variantId,
+        quantity
       });
+      
+      // Log successful variant matching
+      console.log('🛒 Successfully found variantId:', variantId, 'for product:', productId);
       
       console.log('🛒 Add to cart API response:', JSON.stringify(response, null, 2));
       

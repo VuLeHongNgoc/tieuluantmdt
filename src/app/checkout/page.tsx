@@ -2,6 +2,7 @@
 
 import BreadcrumbMinimal from '@/components/ui/BreadcrumbMinimal';
 import { formatCurrency } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 // Type definitions
@@ -31,29 +32,17 @@ interface CheckoutFormData {
   billingAddress: AddressFormData;
   shippingAddress: AddressFormData;
   sameAsShipping: boolean;
-  paymentMethod: 'cod' | 'vnpay' | 'bank-transfer';
+  paymentMethod: 'cod' | 'vnpay' | 'momo' | 'bank-transfer';
   orderNotes?: string;
 }
 
 const CheckoutPage = () => {
-  // Mock cart data
-  const cartItems: CartItem[] = [
-    {
-      id: '1',
-      title: 'Áo Thun Minimalist Typography',
-      price: 390000,
-      quantity: 2,
-      image: '/images/product/product-1.jpg'
-    },
-    {
-      id: '2',
-      title: 'Quần Jean Slim Fit',
-      price: 550000,
-      quantity: 1,
-      image: '/images/product/product-2.jpg'
-    }
-  ];
-
+  // State for cart data
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  // State for form data
   const emptyAddress: AddressFormData = {
     firstName: '',
     lastName: '',
@@ -67,8 +56,7 @@ const CheckoutPage = () => {
     phone: '',
     email: ''
   };
-
-  // State for form data
+  
   const [formData, setFormData] = useState<CheckoutFormData>({
     billingAddress: { ...emptyAddress },
     shippingAddress: { ...emptyAddress },
@@ -76,11 +64,104 @@ const CheckoutPage = () => {
     paymentMethod: 'vnpay',
     orderNotes: ''
   });
+  
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  
+  // Fetch cart data and redirect if needed
+  React.useEffect(() => {
+    async function fetchCart() {
+      try {
+        setIsLoading(true);
+        // Lấy session trước để lấy userId
+        const sessionRes = await fetch('/api/auth/session');
+        const session = await sessionRes.json();
+        
+        if (!session?.user?.id) {
+          throw new Error('Bạn cần đăng nhập để tiếp tục thanh toán.');
+        }
+        
+        // Thêm userId vào URL params khi gọi API cart
+        const response = await fetch(`/api/cart?userId=${session.user.id}`);
+        
+        if (!response.ok) {
+          throw new Error('Không thể lấy dữ liệu giỏ hàng');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.cart?.items) {
+          console.log('Cart items received:', data.cart.items);
+          // Transform API cart items to match CartItem interface
+          const formattedItems = data.cart.items.map((item: any) => ({
+            id: item._id || '',
+            title: item.product?.name || 'Sản phẩm không xác định',
+            price: item.price || 0,
+            quantity: item.quantity || 0,
+            image: item.product?.imageUrl || item.product?.image || '/images/product/placeholder.jpg'
+          }));
+          
+          console.log('Formatted items:', formattedItems);
+          setCartItems(formattedItems);
+          
+          // Kiểm tra giỏ hàng trống sau khi tải dữ liệu
+          if (formattedItems.length === 0) {
+            window.location.href = '/cart';
+          }
+        } else {
+          console.error('Invalid cart data structure:', data);
+          throw new Error('Dữ liệu giỏ hàng không hợp lệ');
+        }
+      } catch (err) {
+        console.error('Error fetching cart:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Có lỗi khi lấy dữ liệu giỏ hàng';
+        setError(errorMessage);
+        
+        // Nếu lỗi liên quan đến đăng nhập, chuyển hướng sau 2 giây
+        if (errorMessage.includes('đăng nhập')) {
+          setTimeout(() => {
+            window.location.href = '/login?redirect=/checkout';
+          }, 2000);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchCart();
+  }, []);
 
   // Calculate order summary
   const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const shipping = 30000; // Fixed shipping fee
   const total = subtotal + shipping;
+  
+  // Show loading or error state
+  if (isLoading) {
+    return (
+      <div className="container py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4">Đang tải dữ liệu giỏ hàng...</h2>
+        <p>Vui lòng đợi trong giây lát</p>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="container py-16 text-center">
+        <h2 className="text-2xl font-bold mb-4 text-red-500">Đã xảy ra lỗi</h2>
+        <p>{error}</p>
+        <button 
+          className="btn btn-solid-default mt-4" 
+          onClick={() => window.location.href = '/cart'}
+        >
+          Quay lại giỏ hàng
+        </button>
+      </div>
+    );
+  }
 
   // Handle input change for billing address
   const handleBillingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -135,24 +216,122 @@ const CheckoutPage = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationErrors([]);
     
     // Validate form
     const {
       firstName, lastName, country, streetAddress, city, state, zipCode, phone, email
     } = formData.shippingAddress;
 
-    if (!firstName || !lastName || !country || !streetAddress || !city || !state || !zipCode || !phone || !email) {
-      alert('Vui lòng điền đầy đủ thông tin giao hàng.');
+    const errors = [];
+
+    if (!firstName || !lastName) {
+      errors.push('Vui lòng điền đầy đủ họ và tên.');
+    }
+
+    if (!country) {
+      errors.push('Vui lòng chọn quốc gia.');
+    }
+
+    if (!streetAddress) {
+      errors.push('Vui lòng điền địa chỉ giao hàng.');
+    }
+
+    if (!city || !state) {
+      errors.push('Vui lòng điền đầy đủ tỉnh/thành phố và quận/huyện.');
+    }
+
+    if (!zipCode) {
+      errors.push('Vui lòng điền mã bưu điện.');
+    }
+
+    if (!phone) {
+      errors.push('Vui lòng điền số điện thoại.');
+    } else if (!/^[0-9]{10,11}$/.test(phone)) {
+      errors.push('Số điện thoại không hợp lệ.');
+    }
+
+    if (!email) {
+      errors.push('Vui lòng điền địa chỉ email.');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push('Địa chỉ email không hợp lệ.');
+    }
+
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    // In a real application, you would submit this data to your API
-    console.log('Order submitted:', formData);
-    alert('Đặt hàng thành công! Bạn sẽ được chuyển hướng đến trang thanh toán.');
+    // Start submission
+    setIsSubmitting(true);
     
-    // Redirect to payment gateway if using VNPAY
-    if (formData.paymentMethod === 'vnpay') {
-      // window.location.href = '/api/payment/create-vnpay-url';
+    try {
+      // Validate cart first
+      const validationResponse = await fetch('/api/cart/validate');
+      const validationResult = await validationResponse.json();
+      
+      if (!validationResponse.ok) {
+        throw new Error(validationResult.message || 'Có lỗi xảy ra khi xác thực giỏ hàng.');
+      }
+      
+      // Create a new order
+      const { sameAsShipping, paymentMethod, orderNotes, shippingAddress } = formData;
+      const billingAddress = sameAsShipping ? shippingAddress : formData.billingAddress;
+      
+      // Format order data
+      const orderData = {
+        paymentMethod: paymentMethod.toUpperCase(),
+        customerInfo: {
+          name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+          email: shippingAddress.email,
+          phone: shippingAddress.phone,
+          address: `${shippingAddress.streetAddress}, ${shippingAddress.city}, ${shippingAddress.state}, ${shippingAddress.country}`,
+        },
+        billingInfo: {
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
+          email: billingAddress.email,
+          phone: billingAddress.phone,
+          address: `${billingAddress.streetAddress}, ${billingAddress.city}, ${billingAddress.state}, ${billingAddress.country}`,
+        },
+        notes: orderNotes
+      };
+      
+      // Submit the order
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Có lỗi xảy ra khi tạo đơn hàng.');
+      }
+      
+      // Order created successfully
+      const orderId = result.order._id;
+      
+      // Handle payment method
+      if (paymentMethod === 'vnpay') {
+        // Redirect to payment gateway
+        router.push(`/api/payment/vnpay?orderId=${orderId}`);
+      } else if (paymentMethod === 'momo') {
+        // Redirect to momo payment
+        router.push(`/api/payment/momo?orderId=${orderId}`);
+      } else {
+        // COD - go to confirmation page
+        router.push(`/orders/${orderId}/confirmation`);
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      setValidationErrors([error instanceof Error ? error.message : 'Có lỗi xảy ra trong quá trình đặt hàng.']);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -169,6 +348,22 @@ const CheckoutPage = () => {
       <div className="ps-content pt-80 pb-80">
         <div className="ps-container">
           <form className="ps-checkout" onSubmit={handleSubmit}>
+            {validationErrors.length > 0 && (
+              <div className="bg-red-50 border border-red-200 text-red-800 rounded-md p-4 mb-6">
+                <div className="flex items-center mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <h3 className="font-medium">Vui lòng kiểm tra lại thông tin</h3>
+                </div>
+                <ul className="list-disc pl-5 space-y-1">
+                  {validationErrors.map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
             <div className="flex flex-col md:flex-row gap-8">
               <div className="md:w-8/12">
                 <div className="bg-white p-6 border rounded-md shadow-sm mb-6">
@@ -585,9 +780,20 @@ const CheckoutPage = () => {
                     <div className="mt-6">
                       <button 
                         type="submit" 
-                        className="ps-btn w-full p-3 bg-blue-600 hover:bg-blue-700 text-black font-medium rounded-md transition duration-200"
+                        className="ps-btn w-full p-3 bg-blue-600 hover:bg-blue-700 text-black font-medium rounded-md transition duration-200 flex justify-center items-center"
+                        disabled={isSubmitting}
                       >
-                        Đặt hàng
+                        {isSubmitting ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Đang xử lý...
+                          </>
+                        ) : (
+                          'Đặt hàng'
+                        )}
                       </button>
                     </div>
                   </div>

@@ -83,7 +83,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ['MOMO', 'STRIPE', 'COD'],
+      enum: ['VNPAY', 'PAYPAL', 'COD'],
       required: true,
     },
     total: {
@@ -143,6 +143,7 @@ orderSchema.methods.updateStatus = function (newStatus) {
 orderSchema.statics.findByStatus = function (status) {
   return this.find({ status }).sort({ createdAt: -1 });
 };
+
 
 // Static method to get user orders
 orderSchema.statics.findByUser = function (userId) {

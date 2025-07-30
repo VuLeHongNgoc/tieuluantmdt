@@ -108,7 +108,12 @@ export async function GET(request: NextRequest) {
           variant = product.variants.find((v: any) => v._id === item.variantId) || null;
         }
         
-        const price = variant ? variant.price : product.price;
+        // Get price from variant's priceOverride if available, otherwise use product's price
+        const price = (variant && variant.priceOverride !== null && variant.priceOverride !== undefined) 
+          ? variant.priceOverride 
+          : product.price;
+          
+        console.log(`Cart item: ${product.name}, variant: ${variant?._id}, price: ${price}, product price: ${product.price}`);
         const itemTotal = price * item.quantity;
         totalPrice += itemTotal;
         
@@ -126,10 +131,12 @@ export async function GET(request: NextRequest) {
           },
           variant: variant ? {
             _id: variant._id,
-            name: variant.name,
-            price: variant.price,
+            color: variant.color || '',
+            size: variant.size || '',
+            price: variant.priceOverride !== null && variant.priceOverride !== undefined 
+              ? variant.priceOverride 
+              : product.price,
             imageUrl: variant.imageUrl || '',
-            attributes: variant.attributes || {}
           } : null,
           price,
           total: itemTotal

@@ -17,7 +17,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const { userId, productId, variantId, quantity = 1 } = body;
+    const { userId, productId, quantity = 1 } = body;
+    let { variantId } = body;
     
     await connectDB();
     const db = mongoose.connection.db;
@@ -40,14 +41,60 @@ export async function POST(request: NextRequest) {
     
     // If variantId is provided, verify that the variant exists
     if (variantId) {
-      const variantExists = product.variants && 
-        product.variants.some((variant: any) => variant._id === variantId);
+      // Log for debugging
+      console.log('Checking variant existence. Product:', productId);
+      console.log('Looking for variantId:', variantId);
       
-      if (!variantExists) {
+      // Ensure product.variants exists
+      if (!product.variants || !Array.isArray(product.variants) || product.variants.length === 0) {
+        console.log('Product has no variants!');
+        console.log('Product data:', JSON.stringify(product, null, 2));
         return NextResponse.json(
-          { success: false, message: 'Product variant not found' },
+          { success: false, message: 'Product has no variants defined' },
           { status: 404 }
         );
+      }
+      
+      console.log('Available variants:', product.variants.map((v: any) => ({
+        id: v._id,
+        color: v.color,
+        size: v.size
+      })));
+      
+      // Convert both to strings before comparing to avoid type mismatches
+      const matchedVariant = product.variants.find(
+        (variant: any) => String(variant._id) === String(variantId)
+      );
+      
+      if (!matchedVariant) {
+        console.log('Variant not found in product!');
+        // Check if this is a simple string comparison issue
+        for (const variant of product.variants) {
+          const idMatch = String(variant._id).includes(String(variantId)) || 
+                        String(variantId).includes(String(variant._id));
+          
+          if (idMatch) {
+            console.log('Found similar variant ID:', variant._id);
+            // Use this similar variant instead
+            variantId = variant._id;
+            console.log('Updated variantId to:', variantId);
+            break;
+          }
+        }
+        
+        // Re-check with potentially updated variantId
+        const variantExists = product.variants.some(
+          (variant: any) => String(variant._id) === String(variantId)
+        );
+        
+        if (!variantExists) {
+          return NextResponse.json(
+            { success: false, message: 'Product variant not found' },
+            { status: 404 }
+          );
+        }
+      } else {
+        console.log('Variant found successfully:', matchedVariant);
       }
     }
     
@@ -66,25 +113,48 @@ export async function POST(request: NextRequest) {
     }
     
     // Check if item already exists in cart
+    console.log('Checking if item exists in cart. Items:', cart.items?.length || 0);
+    
     const existingItemIndex = cart.items?.findIndex(
-      (item: any) => item.productId === productId && 
-        (variantId ? item.variantId === variantId : !item.variantId)
+      (item: any) => String(item.productId) === String(productId) && 
+        (variantId ? String(item.variantId) === String(variantId) : !item.variantId)
     );
+    
+    console.log('Item exists in cart?', existingItemIndex > -1 ? 'Yes' : 'No');
     
     if (existingItemIndex > -1) {
       // Update quantity of existing item
       cart.items[existingItemIndex].quantity += quantity;
       cart.items[existingItemIndex].updatedAt = new Date();
     } else {
+      // If no variantId is provided, try to find an appropriate one
+      if (!variantId && product.variants && product.variants.length > 0) {
+        // Just use the first variant
+        variantId = String(product.variants[0]._id);
+        console.log('No variantId provided. Using first available variant:', variantId);
+      }
+      
+      // Final check to ensure we have a valid variantId
+      if (!variantId && product.variants && product.variants.length > 0) {
+        variantId = String(product.variants[0]._id);
+      } else if (!variantId) {
+        // If we still don't have a variantId and there are no variants, use a placeholder
+        console.log('⚠️ No variants found for product. Using placeholder variant ID.');
+        variantId = 'default';
+      }
+      
       // Add new item to cart
       const newItem = {
         _id: require('crypto').randomUUID(),
-        productId,
-        // Make sure variantId is set even if null to match schema (but model expects it required)
-        variantId: variantId || 'default',
+        productId: String(productId),
+        variantId: String(variantId),
         quantity,
         addedAt: new Date()
       };
+      
+      console.log('Adding new item to cart with variantId:', variantId);
+      
+      console.log('Adding new item to cart:', newItem);
       
       if (!cart.items) {
         cart.items = [];

@@ -51,8 +51,8 @@ Dự án được xây dựng với tiêu chí đơn giản, dễ phát triển,
 - Thêm/xoá/cập nhật giỏ hàng
 - Tạo đơn hàng
 - Thanh toán:
-  - Momo (Việt Nam)
-  - Stripe (quốc tế)
+  - VNPay (Việt Nam)
+  - PayPal(quốc tế)
 - Trạng thái đơn:
   - Chờ xác nhận → Đang chuẩn bị → Đang giao → Đã giao → Đã huỷ
 
