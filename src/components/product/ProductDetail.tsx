@@ -1,12 +1,15 @@
 'use client';
 
+import { useCart } from '@/components/providers/CartProvider';
 import { formatCurrency } from '@/lib/utils';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 interface ProductDetailProps {
   product: {
-    id: string;
+    id?: string;
+    _id?: string;
     title: string;
     price: number;
     rating: number;
@@ -26,6 +29,53 @@ interface ProductDetailProps {
     inStock: boolean;
   };
 }
+
+// Add to Cart Button Component
+const AddToCartButton: React.FC<{ 
+  product: ProductDetailProps['product']; 
+  quantity: number; 
+  selectedSize: string; 
+  selectedColor: string;
+}> = ({ product, quantity, selectedSize, selectedColor }) => {
+  const { addToCart, loading } = useCart();
+
+  const handleAddToCart = async () => {
+    try {
+      // Convert id to _id format if needed - our API expects _id
+      const productId = product._id || product.id || '';
+      
+      if (!productId) {
+        toast.error('Sản phẩm không hợp lệ');
+        return;
+      }
+      
+      await addToCart(
+        productId,
+        quantity,
+        {
+          size: selectedSize,
+          color: selectedColor
+        }
+      );
+    } catch (error) {
+      console.error('Failed to add product to cart:', error);
+      toast.error('Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại sau.');
+    }
+  };
+
+  return (
+    <button 
+      className="w-full py-3 bg-black text-white font-medium hover:bg-gray-900 transition-colors flex items-center justify-center"
+      disabled={!product.inStock || loading}
+      onClick={handleAddToCart}
+    >
+      {loading ? (
+        <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+      ) : null}
+      {product.inStock ? (loading ? 'Đang thêm...' : 'Thêm vào giỏ hàng') : 'Hết hàng'}
+    </button>
+  );
+};
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [activeImage, setActiveImage] = useState(0);
@@ -184,12 +234,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
           {/* Add to Cart Button */}
           <div className="flex flex-col space-y-3 mb-6">
-            <button 
-              className="w-full py-3 bg-black text-white font-medium hover:bg-gray-900 transition-colors"
-              disabled={!product.inStock}
-            >
-              {product.inStock ? 'Thêm vào giỏ hàng' : 'Hết hàng'}
-            </button>
+            <AddToCartButton 
+              product={product}
+              quantity={quantity}
+              selectedSize={selectedSize}
+              selectedColor={selectedColor}
+            />
             <button className="w-full py-3 border border-black text-black font-medium hover:bg-gray-100 transition-colors">
               Mua ngay
             </button>

@@ -216,11 +216,11 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
 - [x] **T049H** - Kết nối Category components với API
   - [x] **T049H1** - Integrate category navigation/sidebar
   - [x] **T049H2** - Implement brands dropdown từ API data
-- [ ] **T049I** - Kết nối Cart functionality với API
-  - [ ] **T049I1** - Add to cart từ product pages
-  - [ ] **T049I2** - Cart page với API integration
-  - [ ] **T049I3** - Update/remove cart items
-  - [ ] **T049I4** - Apply coupon code functionality
+- [x] **T049I** - Kết nối Cart functionality với API
+  - [x] **T049I1** - Add to cart từ product pages
+  - [x] **T049I2** - Cart page với API integration
+  - [x] **T049I3** - Update/remove cart items
+  - [x] **T049I4** - Apply coupon code functionality
 - [ ] **T049J** - Kết nối Checkout process với API
   - [ ] **T049J1** - Validate cart data trước checkout
   - [ ] **T049J2** - Submit order thông qua API

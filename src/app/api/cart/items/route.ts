@@ -80,7 +80,8 @@ export async function POST(request: NextRequest) {
       const newItem = {
         _id: require('crypto').randomUUID(),
         productId,
-        variantId: variantId || null,
+        // Make sure variantId is set even if null to match schema (but model expects it required)
+        variantId: variantId || 'default',
         quantity,
         addedAt: new Date()
       };
@@ -94,14 +95,26 @@ export async function POST(request: NextRequest) {
     
     cart.updatedAt = new Date();
     
-    // Save or update the cart
-    if (cart._id) {
-      await db.collection('carts').updateOne(
+    // Save or update the cart with debug logging
+    console.log('Saving cart to database:', JSON.stringify(cart, null, 2));
+    
+    try {
+      // Use upsert to ensure it creates a new document if it doesn't exist
+      const result = await db.collection('carts').updateOne(
         { userId },
-        { $set: cart }
+        { $set: cart },
+        { upsert: true }
       );
-    } else {
-      await db.collection('carts').insertOne(cart);
+      
+      console.log('Database operation result:', JSON.stringify(result, null, 2));
+      
+      // Double-check that the cart was saved
+      const savedCart = await db.collection('carts').findOne({ userId });
+      console.log('Saved cart in database:', savedCart ? 'Found' : 'Not found', 
+                  savedCart ? `with ${savedCart.items?.length || 0} items` : '');
+    } catch (dbError) {
+      console.error('Database operation failed:', dbError);
+      throw dbError;
     }
     
     // Return the updated cart

@@ -80,6 +80,12 @@ export function HeaderStandard({
 
   // Calculate total items in cart
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  
+  // Calculate total price (in case cartTotal is not provided or incorrect)
+  const calculatedCartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  // Use calculated total if cartTotal is not provided
+  const finalCartTotal = cartTotal || calculatedCartTotal;
 
   // Format price
   const formatPrice = (price: number) => {
@@ -210,7 +216,7 @@ export function HeaderStandard({
               {/* Shopping Cart */}
               <li className="header__cart">
                 <button
-                  className="ps-shopping"
+                  className="ps-shopping relative"
                   onClick={() => {
                     setIsCartOpen(!isCartOpen);
                     setIsUserMenuOpen(false);
@@ -221,54 +227,189 @@ export function HeaderStandard({
                   id="shopping-cart"
                 >
                   <i className="fa fa-shopping-cart" style={{color: '#333'}}></i>
-                  <span><i>{totalItems}</i></span>
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                      {totalItems}
+                    </span>
+                  )}
                 </button>
                 {isCartOpen && (
                   <ul
-                    className="dropdown-menu"
+                    className="dropdown-menu shadow-lg rounded-none overflow-hidden dropdown-menu-right"
                     aria-labelledby="shopping-cart"
                     id="shopping-list"
+                    style={{
+                      maxHeight: '600px',
+                      minWidth: '400px',
+                      overflowY: 'auto'
+                    }}
                   >
                     {cartItems.length > 0 ? (
                       <>
                         {cartItems.map((item) => (
-                          <li key={item.id}>
-                            <span className="ps-product--shopping-cart">
-                              <Link className="ps-product__thumbnail" href={`/product/${item.id}`}>
-                                <Image 
-                                  src={item.image} 
-                                  alt={item.name}
-                                  width={60}
-                                  height={60}
-                                />
-                              </Link>
-                              <span className="ps-product__content">
-                                <Link className="ps-product__title" href={`/product/${item.id}`}>
-                                  {item.name}
+                          <li key={item.id} className="hover:bg-gray-50 transition-colors mb-4 border-b border-gray-100 pb-4">
+                            <div className="ps-product--shopping-cart px-4 pt-2">
+                              {/* Product Image */}
+                              <div className="flex items-start space-x-4">
+                                <Link className="ps-product__thumbnail flex-shrink-0" href={`/product/${item.id}`}>
+                                  {item.image ? (
+                                    <Image 
+                                      src={item.image} 
+                                      alt={item.name}
+                                      width={90}
+                                      height={120}
+                                      style={{
+                                        objectFit: 'cover',
+                                        borderRadius: '4px'
+                                      }}
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = 'none';
+                                        e.currentTarget.parentElement!.classList.add('no-image');
+                                      }}
+                                    />
+                                  ) : (
+                                    <div 
+                                      className="product-placeholder" 
+                                      style={{
+                                        width: '90px',
+                                        height: '120px',
+                                        backgroundColor: '#f8f9fa',
+                                        borderRadius: '4px',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                      }}
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                      </svg>
+                                    </div>
+                                  )}
                                 </Link>
-                                <span className="ps-product__quantity">
-                                  {item.quantity} x <span>{formatPrice(item.price)}</span>
-                                </span>
-                              </span>
-                              <button 
-                                className="ps-product__remove"
-                                onClick={() => {}}
-                                aria-label="Remove item"
-                              >
-                                <i className="fa fa-trash"></i>
-                              </button>
-                            </span>
+                                
+                                {/* Product Details */}
+                                <div className="ps-product__content flex-grow">
+                                  {/* Brand and Name */}
+                                  <div className="mb-1">
+                                    <span className="text-sm font-bold text-gray-500 block">H&M</span>
+                                    <Link 
+                                      className="ps-product__title block font-semibold text-gray-800 hover:text-primary transition-colors" 
+                                      href={`/product/${item.id}`}
+                                      title={item.name}
+                                    >
+                                      {item.name}
+                                    </Link>
+                                    <span className="font-bold text-black block mt-1">{formatPrice(item.price)}</span>
+                                  </div>
+                                  
+                                  {/* Product Attributes */}
+                                  <div className="flex flex-col space-y-2 mt-3">
+                                    <div className="flex flex-row justify-between">
+                                      <div className="w-1/2">
+                                        <span className="text-sm text-gray-500 block">Màu</span>
+                                        <span className="text-sm text-black block">Màu đen</span>
+                                      </div>
+                                      <div className="w-1/2">
+                                        <span className="text-sm text-gray-500 block">Kích cỡ</span>
+                                        <span className="text-sm text-black block">M</span>
+                                      </div>
+                                    </div>
+                                    <div className="flex flex-row justify-between">
+                                      <div className="w-1/2">
+                                        <span className="text-sm text-gray-500 block">Số lượng</span>
+                                        <span className="text-sm text-black block">{item.quantity}</span>
+                                      </div>
+                                      <div className="w-1/2">
+                                        <span className="text-sm text-gray-500 block">Tổng</span>
+                                        <span className="text-sm font-bold text-black block">{formatPrice(item.price * item.quantity)}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Remove Button */}
+                                <button 
+                                  className="ps-product__remove flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 text-red-400 hover:text-red-600 transition-colors"
+                                  onClick={() => {}}
+                                  aria-label="Remove item"
+                                >
+                                  <i className="fa fa-times"></i>
+                                </button>
+                              </div>
+                            </div>
                           </li>
                         ))}
-                        <li className="total">
-                          <p>Total: <span>{formatPrice(cartTotal)}</span></p>
-                          <Link className="ps-btn" href="/cart">Go to cart</Link>
+                        <li className="total px-4 py-3">
+                          <div className="flex flex-col space-y-2 mb-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-700">Giá trị đơn hàng</span> 
+                              <span className="font-bold text-black">{formatPrice(finalCartTotal)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-700">Phí giao hàng ước tính</span> 
+                              <span className="font-bold text-black">{formatPrice(49000)}</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-t border-gray-200 mt-2">
+                            <span className="text-gray-800 font-medium text-lg">TỔNG</span> 
+                            <span className="font-bold text-lg text-black">{formatPrice(finalCartTotal + 49000)}</span>
+                          </div>
+                          <div className="grid gap-2 mt-3">
+                            <Link 
+                              className="ps-btn ps-btn--warning flex items-center justify-center py-3 text-center rounded-none hover:shadow-md transition-all bg-black text-white font-medium" 
+                              href="/checkout"
+                            >
+                              THANH TOÁN
+                            </Link>
+                            <Link 
+                              className="ps-btn flex items-center justify-center py-3 text-center rounded-none hover:shadow-md transition-all border border-gray-300" 
+                              href="/cart"
+                            >
+                              GIỎ HÀNG
+                            </Link>
+                          </div>
                         </li>
                       </>
                     ) : (
-                      <li className="empty-cart">
-                        <p>Your cart is empty</p>
-                        <Link className="ps-btn" href="/shop">Continue Shopping</Link>
+                      <li className="empty-cart p-6 text-center">
+                        <div className="mb-4 flex justify-center">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="60"
+                            height="60"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-gray-400"
+                          >
+                            <circle cx="8" cy="21" r="1"></circle>
+                            <circle cx="19" cy="21" r="1"></circle>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+                          </svg>
+                        </div>
+                        <p className="text-gray-600 mb-4">Giỏ hàng của bạn đang trống</p>
+                        <Link 
+                          className="ps-btn inline-flex items-center justify-center py-2 px-4 rounded-md hover:shadow-md transition-all" 
+                          href="/shop"
+                        >
+                          <i className="fa fa-shopping-bag mr-2"></i>
+                          Tiếp tục mua sắm
+                        </Link>
                       </li>
                     )}
                   </ul>
@@ -322,7 +463,7 @@ export function HeaderStandard({
               aria-label="Close menu"
               style={{fontSize: '18px', color: '#333'}}
             >
-              ×
+              &times;
             </button>
           </div>
           <div className="ps-navigation__content">

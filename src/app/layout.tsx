@@ -1,6 +1,8 @@
 import AuthLayoutWrapper from '@/components/layout/AuthLayoutWrapper';
 import AuthProvider from '@/components/providers/AuthProvider';
+import { CartProvider } from '@/components/providers/CartProvider';
 import type { Metadata } from 'next';
+import { Toaster } from 'react-hot-toast';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -21,14 +23,17 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <AuthLayoutWrapper 
-            headerType="standard"
-            footerType="simple"
-            sliderType="slider-2"
-            loadTemplateStyles={true}
-          >
-            {children}
-          </AuthLayoutWrapper>
+          <CartProvider>
+            <AuthLayoutWrapper 
+              headerType="standard"
+              footerType="simple"
+              sliderType="slider-2"
+              loadTemplateStyles={true}
+            >
+              {children}
+              <Toaster position="top-center" />
+            </AuthLayoutWrapper>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

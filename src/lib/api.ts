@@ -354,16 +354,16 @@ export const endpoints = {
   
   // Cart endpoints
   cart: {
-    get: () => 
-      api.get<Cart>('/cart'),
-    addItem: (data: { productId: string, quantity: number, variant?: { color?: string, size?: string } }) => 
+    get: (userId: string) => 
+      api.get<Cart>(`/cart?userId=${userId}`),
+    addItem: (data: { userId: string, productId: string, quantity: number, variant?: { color?: string, size?: string } }) => 
       api.post<Cart>('/cart/items', data),
-    updateItem: (itemId: string, quantity: number) => 
-      api.put<Cart>(`/cart/items/${itemId}`, { quantity }),
-    removeItem: (itemId: string) => 
-      api.delete<Cart>(`/cart/items/${itemId}`),
-    applyCoupon: (code: string) => 
-      api.post<Cart>('/cart/coupon', { code }),
+    updateItem: (itemId: string, quantity: number, userId: string) => 
+      api.put<Cart>(`/cart/items/${itemId}`, { quantity, userId }),
+    removeItem: (itemId: string, userId: string) => 
+      api.delete<Cart>(`/cart/items/${itemId}?userId=${userId}`),
+    applyCoupon: (code: string, userId: string) => 
+      api.post<Cart>('/cart/coupon', { code, userId }),
   },
   
   // Order endpoints

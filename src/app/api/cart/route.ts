@@ -54,11 +54,18 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Find the user's cart
+    // Find the user's cart with debug logging
+    console.log('Looking for cart with userId:', userId);
     const cart = await db.collection('carts').findOne({ userId });
+    console.log('Cart found:', cart ? 'Yes' : 'No');
+    
+    if (cart) {
+      console.log('Items in cart:', cart.items?.length || 0);
+    }
     
     if (!cart) {
       // If no cart exists, return an empty cart structure
+      console.log('No cart found, returning empty cart');
       return NextResponse.json({
         success: true,
         cart: {

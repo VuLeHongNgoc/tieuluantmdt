@@ -28,6 +28,50 @@ export default function AuthLayoutWrapper({
     email: session.user.email || '',
     avatar: session.user.image || undefined,
   } : undefined;
+  
+  // Import useCart hook to access cart data
+  const { cart } = require('@/components/providers/CartProvider').useCart();
+  
+  // Debug cart data
+  console.log('Cart in AuthLayoutWrapper:', cart);
+  
+  // Extract cart items for the header
+  let cartItems: any[] = [];
+  
+  // Extract cart items for header display if available
+  if (cart?.items) {
+    try {
+      cartItems = cart.items.map((item: any) => {
+        // Handle different response structures
+        const product = item.product || {};
+        const productId = product._id || item.productId;
+        
+        // Get the image URL depending on API response format
+        const imageUrl = 
+          (product.imageUrl) || 
+          (product.images && product.images[0] && (
+            typeof product.images[0] === 'string' 
+              ? product.images[0] 
+              : product.images[0].imageUrl
+          )) || 
+          null;
+        
+        return {
+          id: productId,
+          name: product.name || 'Sản phẩm',
+          price: product.price || item.price || 0,
+          quantity: item.quantity || 0,
+          image: imageUrl,
+        };
+      });
+    } catch (err) {
+      console.error('Error processing cart items for header:', err);
+      cartItems = [];
+    }
+  }
+  
+  // Calculate cart total
+  const cartTotal = cart?.total || 0;
 
   return (
     <>
@@ -38,8 +82,8 @@ export default function AuthLayoutWrapper({
         loadTemplateStyles={loadTemplateStyles}
         isAuthenticated={isAuthenticated}
         user={user}
-        cartItems={[]}
-        cartTotal={0}
+        cartItems={cartItems}
+        cartTotal={cartTotal}
       >
         {children}
       </Layout>
