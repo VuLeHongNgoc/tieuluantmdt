@@ -106,6 +106,19 @@ export default async function ProductPage({ params }: { params: { id: string } }
     console.log('Product category keys:', Object.keys(product.category));
   }
   
+  // Debug the variants data
+  console.log('Product variants:', product.variants);
+  
+  // Extract unique colors and sizes from variants
+  const availableColors = Array.isArray(product.variants) ? 
+    [...new Set(product.variants.map((v: any) => v.color))] : [];
+  
+  const availableSizes = Array.isArray(product.variants) ?
+    [...new Set(product.variants.map((v: any) => v.size))] : [];
+    
+  console.log('Available colors:', availableColors);
+  console.log('Available sizes:', availableSizes);
+  
   // Format product data for our components with defensive programming
   const productData = {
     id: product._id || id,
@@ -116,8 +129,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
     reviewCount: product.reviewCount || 0,
     description: product.description || 'No description available',
     shortDescription: product.shortDescription || (product.description ? product.description.substring(0, 100) + '...' : 'No description available'),
-    colors: product.variants?.color || [],
-    sizes: product.variants?.size || [],
+    colors: availableColors as string[],
+    sizes: availableSizes as string[],
     images: product.images && product.images.length > 0 ? product.images : [{ _id: 'placeholder', imageUrl: '/images/product/placeholder.jpg', alt: product.name || 'Product Image' }],
     category: typeof product.category === 'object' && product.category !== null ? product.category.name : (product.category || 'Uncategorized'),
     brand: typeof product.brand === 'object' && product.brand !== null ? product.brand.name : (product.brand || 'Unknown Brand'),

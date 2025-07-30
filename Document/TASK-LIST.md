@@ -209,13 +209,13 @@ nhatdang082000 - hkVhYpHo7jAw1oNv (Fist Database user admin)
     - [x] **T049F3.3** - Implement token refresh logic khi token hết hạn
     - [x] **T049F3.4** - Handle unauthorized responses (redirect to login)
     - [x] **T049F3.5** - Support cho role-based API access
-- [ ] **T049G** - Kết nối Product listings với API
-  - [ ] **T049G1** - Fetch products cho trang chủ (Featured Products)
-  - [ ] **T049G2** - Integrate Shop page với Product API (filters, pagination)
-  - [ ] **T049G3** - Implement Product detail page với real data
-- [ ] **T049H** - Kết nối Category components với API
-  - [ ] **T049H1** - Integrate category navigation/sidebar
-  - [ ] **T049H2** - Implement brands dropdown từ API data
+- [x] **T049G** - Kết nối Product listings với API
+  - [x] **T049G1** - Fetch products cho trang chủ (Featured Products)
+  - [x] **T049G2** - Integrate Shop page với Product API (filters, pagination)
+  - [x] **T049G3** - Implement Product detail page với real data
+- [x] **T049H** - Kết nối Category components với API
+  - [x] **T049H1** - Integrate category navigation/sidebar
+  - [x] **T049H2** - Implement brands dropdown từ API data
 - [ ] **T049I** - Kết nối Cart functionality với API
   - [ ] **T049I1** - Add to cart từ product pages
   - [ ] **T049I2** - Cart page với API integration
