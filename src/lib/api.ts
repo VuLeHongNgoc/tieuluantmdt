@@ -43,7 +43,9 @@ export type ApiError = {
 };
 
 // Configuration
+// Ensure we don't have duplicate /api/ prefixes
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+console.log(`API_BASE_URL: ${API_BASE_URL}`);
 
 /**
  * Core API Client class
@@ -58,10 +60,16 @@ class ApiClient {
    */
   async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     try {
+      // Avoid duplicate /api/ in URL
+      // If endpoint already contains /api/, remove /api/ from base URL
+      const baseUrl = endpoint.startsWith('/api/') ? '' : API_BASE_URL;
+      
       // Add base URL - ensure there's a slash between base URL and endpoint
       const url = endpoint.startsWith('/') ? 
-        `${API_BASE_URL}${endpoint}` : 
-        `${API_BASE_URL}/${endpoint}`;
+        `${baseUrl}${endpoint}` : 
+        `${baseUrl}/${endpoint}`;
+      
+      console.log(`Making API request to: ${url}`);
       
       // Default headers
       const headers = {
