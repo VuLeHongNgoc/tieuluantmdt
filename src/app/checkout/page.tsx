@@ -169,44 +169,40 @@ const CheckoutPage = () => {
       <div className="ps-content pt-80 pb-80">
         <div className="ps-container">
           <form className="ps-checkout" onSubmit={handleSubmit}>
-            <div className="row">
-              <div className="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                <div className="ps-checkout__billing">
-                  <h3 className="ps-checkout__heading">Thông tin giao hàng</h3>
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="md:w-8/12">
+                <div className="bg-white p-6 border rounded-md shadow-sm mb-6">
+                  <h3 className="text-xl font-bold mb-6 pb-2 border-b">Thông tin giao hàng</h3>
                   
-                  <div className="row">
-                    <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                      <div className="form-group">
-                        <label>Họ <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="text" 
-                          name="firstName"
-                          value={formData.shippingAddress.firstName}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Họ <span className="text-red-500">*</span></label>
+                      <input 
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+                        type="text" 
+                        name="firstName"
+                        value={formData.shippingAddress.firstName}
+                        onChange={handleShippingChange}
+                        required
+                      />
                     </div>
-                    <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                      <div className="form-group">
-                        <label>Tên <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="text" 
-                          name="lastName"
-                          value={formData.shippingAddress.lastName}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Tên <span className="text-red-500">*</span></label>
+                      <input 
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+                        type="text" 
+                        name="lastName"
+                        value={formData.shippingAddress.lastName}
+                        onChange={handleShippingChange}
+                        required
+                      />
                     </div>
                   </div>
                   
-                  <div className="form-group">
-                    <label>Công ty (tùy chọn)</label>
+                  <div className="form-group mb-4 mt-4">
+                    <label className="block text-sm font-medium mb-2">Công ty (tùy chọn)</label>
                     <input 
-                      className="form-control" 
+                      className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
                       type="text" 
                       name="company"
                       value={formData.shippingAddress.company}
@@ -214,10 +210,10 @@ const CheckoutPage = () => {
                     />
                   </div>
                   
-                  <div className="form-group">
-                    <label>Quốc gia <span className="required">*</span></label>
+                  <div className="form-group mb-4">
+                    <label className="block text-sm font-medium mb-2">Quốc gia <span className="text-red-500">*</span></label>
                     <select 
-                      className="form-control" 
+                      className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
                       name="country"
                       value={formData.shippingAddress.country}
                       onChange={handleShippingChange}
@@ -228,10 +224,10 @@ const CheckoutPage = () => {
                     </select>
                   </div>
                   
-                  <div className="form-group">
-                    <label>Địa chỉ <span className="required">*</span></label>
+                  <div className="form-group mb-4">
+                    <label className="block text-sm font-medium mb-2">Địa chỉ <span className="text-red-500">*</span></label>
                     <input 
-                      className="form-control mb-20" 
+                      className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition mb-3" 
                       type="text" 
                       placeholder="Số nhà và tên đường" 
                       name="streetAddress"
@@ -240,7 +236,7 @@ const CheckoutPage = () => {
                       required
                     />
                     <input 
-                      className="form-control" 
+                      className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
                       type="text" 
                       placeholder="Căn hộ, tòa nhà, tầng (tùy chọn)" 
                       name="apartment"
@@ -249,88 +245,76 @@ const CheckoutPage = () => {
                     />
                   </div>
                   
-                  <div className="row">
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                      <div className="form-group">
-                        <label>Tỉnh/Thành phố <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="text" 
-                          name="city"
-                          value={formData.shippingAddress.city}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                      <div className="form-group">
-                        <label>Quận/Huyện <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="text" 
-                          name="state"
-                          value={formData.shippingAddress.state}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                      <div className="form-group">
-                        <label>Mã bưu điện <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="text" 
-                          name="zipCode"
-                          value={formData.shippingAddress.zipCode}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="row">
-                    <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                      <div className="form-group">
-                        <label>Điện thoại <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="text" 
-                          name="phone"
-                          value={formData.shippingAddress.phone}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                      <div className="form-group">
-                        <label>Email <span className="required">*</span></label>
-                        <input 
-                          className="form-control" 
-                          type="email" 
-                          name="email"
-                          value={formData.shippingAddress.email}
-                          onChange={handleShippingChange}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="form-group">
-                    <div className="ps-checkbox">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Tỉnh/Thành phố <span className="text-red-500">*</span></label>
                       <input 
-                        className="form-control" 
-                        type="checkbox" 
-                        id="same-as-shipping" 
-                        checked={formData.sameAsShipping}
-                        onChange={handleSameAsShippingChange}
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition"  
+                        type="text" 
+                        name="city"
+                        value={formData.shippingAddress.city}
+                        onChange={handleShippingChange}
+                        required
                       />
-                      <label htmlFor="same-as-shipping">Địa chỉ thanh toán giống địa chỉ giao hàng?</label>
                     </div>
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Quận/Huyện <span className="text-red-500">*</span></label>
+                      <input 
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+                        type="text" 
+                        name="state"
+                        value={formData.shippingAddress.state}
+                        onChange={handleShippingChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Mã bưu điện <span className="text-red-500">*</span></label>
+                      <input 
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+                        type="text" 
+                        name="zipCode"
+                        value={formData.shippingAddress.zipCode}
+                        onChange={handleShippingChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Điện thoại <span className="text-red-500">*</span></label>
+                      <input 
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+                        type="text" 
+                        name="phone"
+                        value={formData.shippingAddress.phone}
+                        onChange={handleShippingChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label className="block text-sm font-medium mb-2">Email <span className="text-red-500">*</span></label>
+                      <input 
+                        className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+                        type="email" 
+                        name="email"
+                        value={formData.shippingAddress.email}
+                        onChange={handleShippingChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="form-group mt-6 flex items-center">
+                    <input 
+                      className="mr-2 h-4 w-4" 
+                      type="checkbox" 
+                      id="same-as-shipping" 
+                      checked={formData.sameAsShipping}
+                      onChange={handleSameAsShippingChange}
+                    />
+                    <label htmlFor="same-as-shipping" className="text-sm">Địa chỉ thanh toán giống địa chỉ giao hàng?</label>
                   </div>
 
                   {!formData.sameAsShipping && (
@@ -485,10 +469,10 @@ const CheckoutPage = () => {
                     </div>
                   )}
                   
-                  <div className="form-group">
-                    <label>Ghi chú đơn hàng (tùy chọn)</label>
+                  <div className="form-group mt-6">
+                    <label className="block text-sm font-medium mb-2">Ghi chú đơn hàng (tùy chọn)</label>
                     <textarea 
-                      className="form-control" 
+                      className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
                       rows={5} 
                       placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay địa điểm giao hàng chi tiết." 
                       name="orderNotes"
@@ -499,103 +483,114 @@ const CheckoutPage = () => {
                 </div>
               </div>
               
-              <div className="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div className="ps-checkout__order">
-                  <header>
-                    <h3>Đơn hàng của bạn</h3>
-                  </header>
-                  <div className="content">
-                    <table className="table ps-checkout__products">
+              <div className="md:w-4/12">
+                <div className="bg-gray-100 p-6 border rounded-md shadow-sm">
+                  <h3 className="text-xl font-bold mb-4 pb-2 border-b">Đơn hàng của bạn</h3>
+                  
+                  <div className="mb-6">
+                    <table className="w-full">
                       <thead>
-                        <tr>
-                          <th className="text-left">Sản phẩm</th>
-                          <th className="text-right">Thành tiền</th>
+                        <tr className="border-b">
+                          <th className="text-left py-3">Sản phẩm</th>
+                          <th className="text-right py-3">Thành tiền</th>
                         </tr>
                       </thead>
                       <tbody>
                         {cartItems.map((item) => (
-                          <tr key={item.id}>
-                            <td>
-                              {item.title} <span>× {item.quantity}</span>
+                          <tr key={item.id} className="border-b border-gray-100">
+                            <td className="py-3">
+                              <span className="font-medium">{item.title}</span> 
+                              <span className="text-gray-500 ml-1">× {item.quantity}</span>
                             </td>
-                            <td className="text-right">{formatCurrency(item.price * item.quantity)}</td>
+                            <td className="text-right py-3 font-medium">{formatCurrency(item.price * item.quantity)}</td>
                           </tr>
                         ))}
-                        <tr>
-                          <td>Tạm tính</td>
-                          <td className="text-right">{formatCurrency(subtotal)}</td>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 text-gray-600">Tạm tính</td>
+                          <td className="text-right py-3 font-medium">{formatCurrency(subtotal)}</td>
                         </tr>
-                        <tr>
-                          <td>Phí vận chuyển</td>
-                          <td className="text-right">{formatCurrency(shipping)}</td>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 text-gray-600">Phí vận chuyển</td>
+                          <td className="text-right py-3 font-medium">{formatCurrency(shipping)}</td>
                         </tr>
-                        <tr className="total">
-                          <td>Tổng cộng</td>
-                          <td className="text-right">{formatCurrency(total)}</td>
+                        <tr className="font-bold">
+                          <td className="py-3 text-lg">Tổng cộng</td>
+                          <td className="text-right py-3 text-lg">{formatCurrency(total)}</td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
-                  <footer>
-                    <h3>Phương thức thanh toán</h3>
-                    <div className="form-group paypal">
-                      <div className="ps-radio ps-radio--inline">
+                  <div>
+                    <h3 className="text-lg font-bold mb-3 pt-3 border-t">Phương thức thanh toán</h3>
+                    
+                    <div className="mb-4">
+                      <div className="flex items-center mb-2">
                         <input 
-                          className="form-control" 
+                          className="mr-2 h-4 w-4" 
                           type="radio" 
                           id="cod" 
                           name="payment-method"
                           checked={formData.paymentMethod === 'cod'}
                           onChange={() => handlePaymentMethodChange('cod')}
                         />
-                        <label htmlFor="cod">Thanh toán khi nhận hàng (COD)</label>
+                        <label htmlFor="cod" className="font-medium">Thanh toán khi nhận hàng (COD)</label>
                       </div>
-                      <p>Thanh toán tiền mặt khi nhận được hàng.</p>
+                      <p className="text-sm text-gray-600 ml-6">Thanh toán tiền mặt khi nhận được hàng.</p>
                     </div>
-                    <div className="form-group paypal">
-                      <div className="ps-radio ps-radio--inline">
+                    
+                    <div className="mb-4">
+                      <div className="flex items-center mb-2">
                         <input 
-                          className="form-control" 
+                          className="mr-2 h-4 w-4" 
                           type="radio" 
                           id="vnpay" 
                           name="payment-method"
                           checked={formData.paymentMethod === 'vnpay'}
                           onChange={() => handlePaymentMethodChange('vnpay')}
                         />
-                        <label htmlFor="vnpay">Thanh toán qua VNPAY</label>
+                        <label htmlFor="vnpay" className="font-medium">Thanh toán qua VNPAY</label>
                       </div>
-                      <div className="ps-checkout__vnpay">
-                        <img src="/images/payment/vnpay.png" alt="VNPAY" />
-                        <p>Thanh toán an toàn với VNPAY.</p>
+                      <div className="ml-6">
+                        <img src="/images/payment/vnpay.png" alt="VNPAY" className="h-10" />
+                        <p className="text-sm text-gray-600 mt-1">Thanh toán an toàn với VNPAY.</p>
                       </div>
                     </div>
-                    <div className="form-group cheque">
-                      <div className="ps-radio">
+                    
+                    <div className="mb-4">
+                      <div className="flex items-center mb-2">
                         <input 
-                          className="form-control" 
+                          className="mr-2 h-4 w-4" 
                           type="radio" 
                           id="bank-transfer" 
                           name="payment-method"
                           checked={formData.paymentMethod === 'bank-transfer'}
                           onChange={() => handlePaymentMethodChange('bank-transfer')}
                         />
-                        <label htmlFor="bank-transfer">Chuyển khoản ngân hàng</label>
+                        <label htmlFor="bank-transfer" className="font-medium">Chuyển khoản ngân hàng</label>
                       </div>
-                      <p>
-                        Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã đơn hàng của bạn trong phần Nội dung thanh toán. Đơn hàng sẽ được giao sau khi tiền đã được chuyển vào tài khoản của chúng tôi.
-                      </p>
-                      <p>
-                        <strong>Thông tin tài khoản:</strong><br />
-                        Ngân hàng: Vietcombank<br />
-                        STK: 1234567890<br />
-                        Chủ TK: Công ty TNHH Thương Mại Điện Tử<br />
-                        Chi nhánh: TP.HCM
-                      </p>
+                      <div className="ml-6 text-sm text-gray-600">
+                        <p className="mb-2">
+                          Thực hiện thanh toán trực tiếp vào tài khoản ngân hàng của chúng tôi. Vui lòng sử dụng Mã đơn hàng của bạn trong phần Nội dung thanh toán. Đơn hàng sẽ được giao sau khi tiền đã được chuyển vào tài khoản của chúng tôi.
+                        </p>
+                        <div className="bg-gray-50 p-3 rounded-md mt-2">
+                          <p className="font-medium mb-1">Thông tin tài khoản:</p>
+                          <p className="mb-0">Ngân hàng: Vietcombank</p>
+                          <p className="mb-0">STK: 1234567890</p>
+                          <p className="mb-0">Chủ TK: Công ty TNHH Thương Mại Điện Tử</p>
+                          <p className="mb-0">Chi nhánh: TP.HCM</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="form-group submit">
-                      <button type="submit" className="ps-btn ps-btn--fullwidth">Đặt hàng</button>
+                    
+                    <div className="mt-6">
+                      <button 
+                        type="submit" 
+                        className="ps-btn w-full p-3 bg-blue-600 hover:bg-blue-700 text-black font-medium rounded-md transition duration-200"
+                      >
+                        Đặt hàng
+                      </button>
                     </div>
-                  </footer>
+                  </div>
                 </div>
               </div>
             </div>

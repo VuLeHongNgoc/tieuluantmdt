@@ -119,7 +119,10 @@ export async function GET(request: NextRequest) {
             name: product.name,
             slug: product.slug,
             price: product.price,
-            imageUrl: product.imageUrl || product.images?.[0] || '',
+            // Sử dụng images nếu có sẵn
+            imageUrl: product.imageUrl || (product.images && product.images[0]?.imageUrl) || '',
+            // Thêm thuộc tính image cho tương thích ngược
+            image: product.imageUrl || (product.images && product.images[0]?.imageUrl) || '',
           },
           variant: variant ? {
             _id: variant._id,

@@ -5,12 +5,63 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+// ProductImage component để xử lý hình ảnh sản phẩm một cách đáng tin cậy
+const ProductImage = ({ 
+  image, 
+  imageUrl, 
+  name 
+}: { 
+  image?: string; 
+  imageUrl?: string; 
+  name: string 
+}) => {
+  const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    // Ưu tiên imageUrl trước, sau đó đến image
+    if (imageUrl && imageUrl.trim() !== '') {
+      setImgSrc(imageUrl);
+    } else if (image && image.trim() !== '') {
+      setImgSrc(image);
+    } else {
+      // Nếu không có hình ảnh, sử dụng placeholder
+      setImgSrc('/images/product/cart-placeholder.jpg');
+    }
+    
+    // Đặt lại trạng thái lỗi
+    setImgError(false);
+  }, [image, imageUrl]);
+
+  const handleError = () => {
+    console.error('Image failed to load:', imgSrc);
+    setImgSrc('/images/product/cart-placeholder.jpg');
+    setImgError(true);
+  };
+
+  return (
+    <div className="relative w-[90px] h-[120px] bg-gray-50">
+      {imgSrc && (
+        <Image
+          src={imgSrc}
+          alt={name}
+          fill
+          className="object-cover rounded"
+          unoptimized
+          onError={handleError}
+        />
+      )}
+    </div>
+  );
+};
+
 interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
-  image: string;
+  image?: string; // URL hình ảnh (từ API cũ)
+  imageUrl?: string; // URL hình ảnh (từ model Product)
 }
 
 interface User {
@@ -40,6 +91,18 @@ export function HeaderStandard({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  // Debugging cart items để tìm lỗi hình ảnh
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      console.log('Cart items:', cartItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        image: item.image,
+        imageUrl: item.imageUrl
+      })));
+    }
+  }, [cartItems]);
 
   // Handle sticky header scroll
   useEffect(() => {
@@ -251,52 +314,12 @@ export function HeaderStandard({
                             <div className="ps-product--shopping-cart px-4 pt-2">
                               {/* Product Image */}
                               <div className="flex items-start space-x-4">
-                                <Link className="ps-product__thumbnail flex-shrink-0" href={`/product/${item.id}`}>
-                                  {item.image ? (
-                                    <Image 
-                                      src={item.image} 
-                                      alt={item.name}
-                                      width={90}
-                                      height={120}
-                                      style={{
-                                        objectFit: 'cover',
-                                        borderRadius: '4px'
-                                      }}
-                                      onError={(e) => {
-                                        e.currentTarget.style.display = 'none';
-                                        e.currentTarget.parentElement!.classList.add('no-image');
-                                      }}
-                                    />
-                                  ) : (
-                                    <div 
-                                      className="product-placeholder" 
-                                      style={{
-                                        width: '90px',
-                                        height: '120px',
-                                        backgroundColor: '#f8f9fa',
-                                        borderRadius: '4px',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                      }}
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      >
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                        <polyline points="21 15 16 10 5 21"></polyline>
-                                      </svg>
-                                    </div>
-                                  )}
+                                <Link className="ps-product__thumbnail flex-shrink-0" href={`/product/${item.id}`}>                                  
+                                  <ProductImage 
+                                    image={item.image} 
+                                    imageUrl={item.imageUrl} 
+                                    name={item.name || 'Sản phẩm'}
+                                  />
                                 </Link>
                                 
                                 {/* Product Details */}

@@ -118,7 +118,8 @@ const ContactMap: React.FC<ContactMapProps> = ({
     <div 
       ref={mapRef}
       id="contact-map"
-      style={{ width: '100%', height: '100%', minHeight: '400px' }}
+      className="w-full h-full rounded-md overflow-hidden shadow-sm"
+      style={{ minHeight: '500px' }}
     ></div>
   );
 };

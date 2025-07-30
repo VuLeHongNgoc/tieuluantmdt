@@ -99,44 +99,41 @@ const ContactForm = () => {
   };
 
   return (
-    <form className="ps-form--contact" onSubmit={handleSubmit}>
+    <form className="w-full" onSubmit={handleSubmit}>
       {status.message && (
-        <div className={`alert ${status.type === 'success' ? 'alert-success' : 'alert-danger'} mb-4`}>
+        <div className={`${status.type === 'success' ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'} p-4 mb-6 rounded-md border`}>
           {status.message}
         </div>
       )}
       
-      <div className="row">
-        <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-          <div className="form-group">
-            <input 
-              className="form-control" 
-              type="text" 
-              placeholder="Họ và tên" 
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required 
-            />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="form-group">
+          <input 
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
+            type="text" 
+            placeholder="Họ và tên" 
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required 
+          />
         </div>
-        <div className="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-          <div className="form-group">
-            <input
-              className="form-control"
-              type="email"
-              placeholder="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <div className="form-group">
+          <input
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition"
+            type="email"
+            placeholder="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
         </div>
       </div>
-      <div className="form-group">
+      
+      <div className="form-group mb-4">
         <input 
-          className="form-control" 
+          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
           type="text" 
           placeholder="Tiêu đề" 
           name="subject"
@@ -144,9 +141,10 @@ const ContactForm = () => {
           onChange={handleChange}
         />
       </div>
-      <div className="form-group">
+      
+      <div className="form-group mb-4">
         <textarea 
-          className="form-control" 
+          className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 outline-none transition" 
           rows={6} 
           placeholder="Nội dung" 
           name="message"
@@ -155,10 +153,11 @@ const ContactForm = () => {
           required
         ></textarea>
       </div>
+      
       <div className="form-group">
         <button 
           type="submit"
-          className="ps-btn ps-btn--fullwidth ps-btn--black"
+          className="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
           disabled={status.type === 'loading'}
         >
           {status.type === 'loading' ? 'Đang gửi...' : 'Gửi tin nhắn'}
