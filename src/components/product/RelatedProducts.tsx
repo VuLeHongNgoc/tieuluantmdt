@@ -5,57 +5,101 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-interface RelatedProductsProps {
-  category: string;
-  currentProductId: string;
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  salePrice?: number;
+  images?: {
+    _id: string;
+    imageUrl: string;
+    alt?: string;
+  }[];
+  category?: string | {
+    _id: string;
+    name: string;
+    slug?: string;
+  };
+  isNew?: boolean;
+  isHot?: boolean;
+  discount?: number;
+  [key: string]: any;
 }
 
-const RelatedProducts: React.FC<RelatedProductsProps> = ({ category, currentProductId }) => {
-  // Giả lập dữ liệu sản phẩm liên quan
-  // Trong ứng dụng thực tế, sẽ fetch từ API dựa trên category và loại trừ currentProductId
-  const relatedProducts = [
-    {
-      id: 'product-1',
-      title: 'Áo Thun Basic Logo',
-      price: 350000,
-      image: '/images/product/product-4.jpg',
-      category: 'Áo thun',
-      isNew: true,
-      isHot: false,
-      discount: 0
-    },
-    {
-      id: 'product-2',
-      title: 'Áo Polo Minimalist',
-      price: 450000,
-      image: '/images/product/product-5.jpg',
-      category: 'Áo thun',
-      isNew: false,
-      isHot: true,
-      discount: 15
-    },
-    {
-      id: 'product-3',
-      title: 'Áo Thun Unisex',
-      price: 320000,
-      image: '/images/product/product-6.jpg',
-      category: 'Áo thun',
-      isNew: false,
-      isHot: false,
-      discount: 0
-    },
-    {
-      id: 'product-4',
-      title: 'Áo Thun Graphic',
-      price: 380000,
-      originalPrice: 450000,
-      image: '/images/product/product-7.jpg',
-      category: 'Áo thun',
-      isNew: false,
-      isHot: false,
-      discount: 10
+interface RelatedProductsProps {
+  products: Product[];
+}
+
+const RelatedProducts: React.FC<RelatedProductsProps> = ({ products: inputProducts }) => {
+  // If no products provided, show nothing
+  if (!inputProducts || inputProducts.length === 0) {
+    return null;
+  }
+  
+  // Debug the products structure
+  console.log("RelatedProducts received:", inputProducts.length, "products");
+  
+  // Make a safe copy of products, ensuring no objects are passed directly to JSX
+  const products = inputProducts.map(product => {
+    const safeProd = { ...product };
+    
+    // Check each property and ensure no objects are going to be rendered
+    Object.keys(safeProd).forEach(key => {
+      if (typeof safeProd[key] === 'object' && safeProd[key] !== null && !Array.isArray(safeProd[key])) {
+        console.warn(`Found object in product property ${key}:`, safeProd[key]);
+        // Replace object with a string representation
+        if (key === 'category' && safeProd[key].name) {
+          safeProd[key] = safeProd[key].name;
+        } else {
+          safeProd[key] = `[${key}]`;
+        }
+      }
+    });
+    
+    return safeProd;
+  });
+  
+  // Debug each product before processing
+  products.forEach((product, index) => {
+    console.log(`Product ${index} category type:`, typeof product.category);
+    
+    if (product.category && typeof product.category === 'object') {
+      console.log(`Product ${index} category keys:`, Object.keys(product.category));
+      console.log(`Product ${index} category name:`, product.category.name);
     }
-  ].filter(product => product.id !== currentProductId);
+  });
+  
+  // Map the products to the format expected by the component
+  const relatedProducts = products.map(product => {
+    // Handle category properly
+    let categoryName = 'Unknown';
+    if (product.category) {
+      if (typeof product.category === 'object' && product.category !== null) {
+        // If it's an object with a name property
+        if (product.category.name !== undefined) {
+          categoryName = product.category.name;
+        } else {
+          console.log('Object category without name property:', product.category);
+          categoryName = 'Category';
+        }
+      } else if (typeof product.category === 'string') {
+        // If it's a string
+        categoryName = product.category;
+      }
+    }
+    
+    return {
+      id: product._id,
+      title: product.name,
+      price: product.salePrice || product.price,
+      originalPrice: product.salePrice ? product.price : undefined,
+      image: product.images && product.images.length > 0 ? product.images[0].imageUrl : '/images/product/placeholder.jpg',
+      category: categoryName,
+      isNew: product.isNew || false,
+      isHot: product.isHot || false,
+      discount: product.discount || 0
+    };
+  });
 
   return (
     <div className="related-products-minimal container mx-auto px-4 py-12">

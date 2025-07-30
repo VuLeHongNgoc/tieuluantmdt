@@ -10,7 +10,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const categoryId = params.id;
+    // Await params before accessing properties
+    const { id } = await params;
+    const categoryId = id;
     
     if (!categoryId) {
       return NextResponse.json(

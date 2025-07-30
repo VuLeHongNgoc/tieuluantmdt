@@ -10,7 +10,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const productId = params.id;
+    // In Next.js App Router, we should await dynamic params
+    const { id } = await params;
+    const productId = id;
     
     if (!productId) {
       return NextResponse.json(
@@ -29,15 +31,28 @@ export async function GET(
       );
     }
     
-    // Tìm sản phẩm theo ID hoặc slug
-    const product = await db.collection('products').findOne({
-      $or: [
-        { productId: productId },
-        { slug: productId }
-      ]
-    });
+    // Enhanced debugging
+    console.log(`Searching for product with ID or slug: "${productId}"`);
+    
+    // Get all product IDs to debug
+    const allProducts = await db.collection('products').find({}).project({ _id: 1, slug: 1 }).toArray();
+    console.log('Available products:', allProducts.map(p => ({ _id: p._id, slug: p.slug })));
+    
+    // Cast the collection to any to bypass TypeScript errors
+    const productsCollection = db.collection('products') as any;
+    
+    // Try to find by string _id first
+    let product = await productsCollection.findOne({ _id: productId });
+    console.log(`Lookup by _id: ${product ? 'FOUND' : 'NOT FOUND'}`);
+    
+    // If not found, try by slug
+    if (!product) {
+      product = await productsCollection.findOne({ slug: productId });
+      console.log(`Lookup by slug: ${product ? 'FOUND' : 'NOT FOUND'}`);
+    }
     
     if (!product) {
+      console.log(`Product not found with ID or slug: ${productId}`);
       return NextResponse.json(
         { success: false, message: 'Product not found' },
         { status: 404 }

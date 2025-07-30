@@ -1,41 +1,24 @@
 'use client';
 
+import { Product } from '@/lib/api';
+import { useApiGet } from '@/lib/api-hooks';
 import { useEffect, useState } from 'react';
-
-// Mock data for featured products
-const featuredProducts = [
-  {
-    id: 1,
-    name: 'Essential T-Shirt',
-    price: 890000,
-    image: '/images/product/home-1/1.jpg',
-    category: 'Clothing'
-  },
-  {
-    id: 2,
-    name: 'Leather Bag',
-    price: 1290000,
-    image: '/images/product/home-1/2.jpg',
-    category: 'Accessories'
-  },
-  {
-    id: 3,
-    name: 'Minimalist Watch',
-    price: 2150000,
-    image: '/images/product/home-1/3.jpg',
-    category: 'Accessories'
-  },
-  {
-    id: 4,
-    name: 'Classic Sunglasses',
-    price: 750000,
-    image: '/images/product/home-1/4.jpg',
-    category: 'Accessories'
-  }
-];
+import ErrorDisplay from '../ui/ErrorDisplay';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
 export default function MinimalistHomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  
+  // Fetch featured products from API
+  const { 
+    data: featuredProductsData, 
+    isLoading: isLoadingProducts, 
+    error: productsError,
+    refetch: refetchProducts
+  } = useApiGet<Product[]>('/products/featured');
+  
+  // Get featured products or empty array if loading/error
+  const featuredProducts = featuredProductsData || [];
 
   // Auto-rotate hero slides
   useEffect(() => {
@@ -160,31 +143,78 @@ export default function MinimalistHomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <a href={`/product/${product.id}`} key={product.id} className="group cursor-pointer">
-                <div className="relative aspect-square bg-white mb-4 overflow-hidden">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300"></div>
+          {/* Loading State */}
+          {isLoadingProducts && (
+            <div className="py-12">
+              <LoadingSpinner className="my-16" />
+              <p className="text-center text-gray-500 mt-4">Loading featured products...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {productsError && (
+            <div className="py-6">
+              <ErrorDisplay 
+                message={productsError.message || "Could not load featured products"} 
+                onRetry={refetchProducts}
+                className="max-w-md mx-auto" 
+              />
+            </div>
+          )}
+
+          {/* Products Grid */}
+          {!isLoadingProducts && !productsError && (
+            <>
+              {featuredProducts.length === 0 ? (
+                <p className="text-center text-gray-500 py-12">No featured products available at the moment.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {featuredProducts.map((product) => (
+                    <a href={`/product/${product._id}`} key={product._id} className="group cursor-pointer">
+                      <div className="relative aspect-square bg-white mb-4 overflow-hidden">
+                        <img
+                          src={(product.images && product.images.length > 0) ? product.images[0].imageUrl : '/images/product/placeholder.jpg'}
+                          alt={(product.images && product.images.length > 0 && product.images[0].alt) ? product.images[0].alt : product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {product.isNew && (
+                          <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">New</span>
+                        )}
+                        {product.isHot && (
+                          <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">Hot</span>
+                        )}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300"></div>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">
+                          {product.category}
+                        </p>
+                        <h3 className="text-lg font-light text-gray-900 mb-2">
+                          {product.name}
+                        </h3>
+                        <div>
+                          {product.salePrice ? (
+                            <>
+                              <p className="text-gray-700 font-medium">
+                                {formatPrice(product.salePrice)}
+                              </p>
+                              <p className="text-gray-500 text-sm line-through">
+                                {formatPrice(product.price)}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-gray-700">
+                              {formatPrice(product.price)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
                 </div>
-                <div className="text-center">
-                  <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">
-                    {product.category}
-                  </p>
-                  <h3 className="text-lg font-light text-gray-900 mb-2">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-700">
-                    {formatPrice(product.price)}
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
+              )}
+            </>
+          )}
 
           <div className="text-center mt-16">
             <a 

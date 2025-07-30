@@ -1,5 +1,6 @@
 'use client';
 
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -157,11 +158,17 @@ export function HeaderStandard({
                     setIsCartOpen(false);
                     setIsSearchOpen(false);
                   }}
+                  className="flex items-center space-x-2"
                   aria-haspopup="true"
                   aria-expanded={isUserMenuOpen}
                   id="shopping-action"
                 >
                   <i className="fa fa-user" style={{color: '#333'}}></i>
+                  {isAuthenticated && user && (
+                    <span className="hidden md:inline text-sm font-medium text-gray-700">
+                      {user.name}
+                    </span>
+                  )}
                 </button>
                 {isUserMenuOpen && (
                   <ul
@@ -170,15 +177,29 @@ export function HeaderStandard({
                   >
                     {isAuthenticated ? (
                       <>
+                        <li>
+                          <span className="text-sm font-medium text-gray-700 px-3 py-2 block">
+                            👋 Xin chào, {user?.name || 'User'}
+                          </span>
+                        </li>
                         <li><Link href="/profile">Profile</Link></li>
                         <li><Link href="/orders">My Orders</Link></li>
                         <li><Link href="/wishlist">Wishlist</Link></li>
-                        <li><button onClick={() => {}}>Logout</button></li>
+                        <li>
+                          <button 
+                            onClick={async () => {
+                              await signOut({ callbackUrl: '/' });
+                            }}
+                            className="text-red-600 hover:text-red-800 w-full text-left"
+                          >
+                            Logout
+                          </button>
+                        </li>
                       </>
                     ) : (
                       <>
-                        <li><Link href="/login">Login</Link></li>
-                        <li><Link href="/register">Register</Link></li>
+                        <li><Link href="/auth/login">Login</Link></li>
+                        <li><Link href="/auth/register">Register</Link></li>
                         <li><Link href="/wishlist">Wishlist</Link></li>
                       </>
                     )}

@@ -1,4 +1,4 @@
-import Layout from '@/components/layout/Layout';
+import AuthLayoutWrapper from '@/components/layout/AuthLayoutWrapper';
 import AuthProvider from '@/components/providers/AuthProvider';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -21,14 +21,14 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <Layout 
+          <AuthLayoutWrapper 
             headerType="standard"
             footerType="simple"
             sliderType="slider-2"
             loadTemplateStyles={true}
           >
             {children}
-          </Layout>
+          </AuthLayoutWrapper>
         </AuthProvider>
       </body>
     </html>

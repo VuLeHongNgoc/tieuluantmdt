@@ -11,7 +11,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const userId = params.id;
+    // Await params before accessing properties
+    const { id } = await params;
+    const userId = id;
     
     if (!userId) {
       return NextResponse.json(

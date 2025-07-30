@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       name,
       email,
       password: hashedPassword,
-      role: 'user', // Default role
+      role: 'USER', // Default role
     });
     
     // Remove password from response

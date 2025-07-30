@@ -31,18 +31,47 @@ export async function GET(request: NextRequest) {
     
     // Lọc theo category nếu có
     if (category) {
-      // Kiểm tra nếu category là số (ID) hoặc string (slug)
-      if (!isNaN(Number(category))) {
-        query.categoryId = Number(category);
-      } else {
-        // Tìm category bằng slug
-        const db = mongoose.connection.db;
-        if (db) {
-          const categoryDoc = await db.collection('categories')
-            .findOne({ slug: category });
-          
-          if (categoryDoc) {
-            query.categoryId = categoryDoc._id;
+      try {
+        // Check if category is a JSON object
+        const categoryObj = typeof category === 'string' && category.startsWith('{') ? 
+          JSON.parse(category) : category;
+        
+        // Handle different category formats
+        if (typeof categoryObj === 'object' && categoryObj !== null) {
+          // If it's an object with _id
+          if (categoryObj._id) {
+            query.categoryId = categoryObj._id;
+          }
+        } else if (!isNaN(Number(category))) {
+          // If it's a number (ID)
+          query.categoryId = Number(category);
+        } else {
+          // Try to find category by slug
+          const db = mongoose.connection.db;
+          if (db) {
+            const categoryDoc = await db.collection('categories')
+              .findOne({ slug: category });
+            
+            if (categoryDoc) {
+              query.categoryId = categoryDoc._id;
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing category parameter:', e);
+        // If parsing fails, try to use it as is
+        if (!isNaN(Number(category))) {
+          query.categoryId = Number(category);
+        } else {
+          // Use as slug
+          const db = mongoose.connection.db;
+          if (db) {
+            const categoryDoc = await db.collection('categories')
+              .findOne({ slug: category });
+            
+            if (categoryDoc) {
+              query.categoryId = categoryDoc._id;
+            }
           }
         }
       }
@@ -91,12 +120,27 @@ export async function GET(request: NextRequest) {
     }
     
     // Truy vấn sản phẩm với phân trang và sắp xếp
-    const products = await db.collection('products')
+    let products = await db.collection('products')
       .find(query)
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
       .toArray();
+      
+    // Process products to ensure category is properly handled
+    products = products.map(product => {
+      if (product.category && typeof product.category === 'object') {
+        // Extract just the name and id from the category object
+        return {
+          ...product,
+          category: {
+            _id: product.category._id,
+            name: product.category.name
+          }
+        };
+      }
+      return product;
+    });
     
     // Đếm tổng số sản phẩm thỏa mãn query
     const total = await db.collection('products').countDocuments(query);

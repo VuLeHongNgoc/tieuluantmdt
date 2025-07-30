@@ -15,7 +15,11 @@ interface ProductDetailProps {
     shortDescription: string;
     colors: string[];
     sizes: string[];
-    images: string[];
+    images: {
+      _id: string;
+      imageUrl: string;
+      alt?: string;
+    }[];
     category: string;
     brand: string;
     sku: string;
@@ -54,8 +58,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             {/* Main Image */}
             <div className="mb-4 relative h-[500px] bg-gray-50 flex items-center justify-center overflow-hidden">
               <Image
-                src={product.images[activeImage] || '/images/product/placeholder.jpg'}
-                alt={product.title}
+                src={(product.images && product.images.length > activeImage) ? product.images[activeImage].imageUrl : '/images/product/placeholder.jpg'}
+                alt={(product.images && product.images.length > activeImage && product.images[activeImage].alt) ? product.images[activeImage].alt : product.title}
                 width={500}
                 height={500}
                 className="object-contain max-h-[500px] transition-all duration-300"
@@ -81,8 +85,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                   onClick={() => setActiveImage(index)}
                 >
                   <Image
-                    src={image || '/images/product/placeholder.jpg'}
-                    alt={`${product.title} - thumbnail ${index + 1}`}
+                    src={image.imageUrl || '/images/product/placeholder.jpg'}
+                    alt={image.alt || `${product.title} - thumbnail ${index + 1}`}
                     width={80}
                     height={80}
                     className="object-cover w-full h-full"

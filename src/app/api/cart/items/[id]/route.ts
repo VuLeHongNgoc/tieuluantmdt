@@ -10,7 +10,9 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const itemId = params.id;
+    // Await params before accessing properties
+    const { id } = await params;
+    const itemId = id;
     if (!itemId) {
       return NextResponse.json(
         { success: false, message: 'Item ID is required' },
