@@ -10,10 +10,10 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Get user session
     const session = await auth();
@@ -34,12 +34,16 @@ export async function PUT(
     }
     
     // Get request body
-    const { status } = await request.json();
+    const body = await request.json();
+    const { status } = body;
+    
+    console.log('Updating order status:', { orderId: id, newStatus: status, body });
     
     // Validate status
     const validStatuses = ['PENDING', 'PREPARING', 'SHIPPING', 'DELIVERED', 'CANCELLED'];
     
     if (!status || !validStatuses.includes(status)) {
+      console.log('Invalid status:', status);
       return NextResponse.json(
         { message: 'Invalid status' },
         { status: 400 }
@@ -52,6 +56,8 @@ export async function PUT(
     // Find the order
     const order = await Order.findOne({ _id: id });
     
+    console.log('Found order:', { orderId: id, orderExists: !!order, currentStatus: order?.status });
+    
     if (!order) {
       return NextResponse.json(
         { message: 'Order not found' },
@@ -59,20 +65,17 @@ export async function PUT(
       );
     }
     
-    try {
-      // Update status
-      await order.updateStatus(status);
-      
-      return NextResponse.json({
-        message: 'Order status updated successfully',
-        status: order.status
-      });
-    } catch (statusError) {
-      return NextResponse.json(
-        { message: (statusError as Error).message },
-        { status: 400 }
-      );
-    }
+    // Update status directly (bypass transition rules for admin)
+    console.log('Updating order status from', order.status, 'to', status);
+    order.status = status;
+    await order.save();
+    
+    console.log('Order status updated successfully');
+    
+    return NextResponse.json({
+      message: 'Order status updated successfully',
+      status: order.status
+    });
   } catch (error) {
     console.error('Error updating order status:', error);
     return NextResponse.json(

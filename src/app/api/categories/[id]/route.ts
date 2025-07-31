@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Await params before accessing properties
@@ -77,7 +77,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // TODO: Implement authentication to check for admin role
@@ -86,7 +86,7 @@ export async function PUT(
     //   return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     // }
     
-    const categoryId = params.id;
+    const { id: categoryId } = await params;
     const body = await request.json();
     
     if (!categoryId) {
@@ -185,7 +185,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // TODO: Implement authentication to check for admin role
@@ -194,7 +194,7 @@ export async function DELETE(
     //   return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     // }
     
-    const categoryId = params.id;
+    const { id: categoryId } = await params;
     
     if (!categoryId) {
       return NextResponse.json(

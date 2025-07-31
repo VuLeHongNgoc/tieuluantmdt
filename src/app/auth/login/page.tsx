@@ -84,8 +84,19 @@ export default function LoginPage() {
       
       if (result?.error) {
         setLoginError(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
+      } else if (result?.ok) {
+        // Check if user is admin and redirect accordingly
+        const response = await fetch('/api/users/profile');
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData.success && userData.role === 'ADMIN') {
+            router.push('/admin');
+          } else {
+            router.push(callbackUrl);
+          }
+        } else {
+          router.push(callbackUrl);
+        }
       }
     } catch (error) {
       setLoginError('An unexpected error occurred. Please try again.');

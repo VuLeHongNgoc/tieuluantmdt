@@ -7,10 +7,9 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // In Next.js App Router, we should await dynamic params
     const { id } = await params;
     const productId = id;
     
@@ -109,7 +108,7 @@ export async function GET(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // TODO: Implement authentication to check for admin role
@@ -118,7 +117,7 @@ export async function PUT(
     //   return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     // }
     
-    const productId = params.id;
+    const { id: productId } = await params;
     const body = await request.json();
     
     if (!productId) {
@@ -202,7 +201,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // TODO: Implement authentication to check for admin role
@@ -211,7 +210,7 @@ export async function DELETE(
     //   return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     // }
     
-    const productId = params.id;
+    const { id: productId } = await params;
     
     if (!productId) {
       return NextResponse.json(

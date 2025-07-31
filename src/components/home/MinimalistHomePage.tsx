@@ -2,6 +2,7 @@
 
 import { Product } from '@/lib/api';
 import { useApiGet } from '@/lib/api-hooks';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import ErrorDisplay from '../ui/ErrorDisplay';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -42,50 +43,59 @@ export default function MinimalistHomePage() {
         {/* Background Slides */}
         <div className="absolute inset-0">
           <div className={`absolute inset-0 transition-opacity duration-1000 ${currentSlide === 0 ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="w-full h-full bg-gradient-to-r from-gray-50 to-gray-100 flex items-center justify-center">
-              <div className="text-center">
-                <h1 className="text-6xl md:text-8xl font-light text-gray-900 mb-4">SIMPLE</h1>
-                <p className="text-xl text-gray-600">Timeless Design</p>
+            <div className="relative w-full h-full">
+              <Image
+                src="/images/herobanner1.png"
+                alt="Simple"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-6xl md:text-8xl font-light text-white mb-4">SIMPLE</h1>
+                  <p className="text-xl text-white text-opacity-90">Timeless Design</p>
+                </div>
               </div>
             </div>
           </div>
           
           <div className={`absolute inset-0 transition-opacity duration-1000 ${currentSlide === 1 ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center">
-              <div className="text-center">
-                <h1 className="text-6xl md:text-8xl font-light text-gray-900 mb-4">CLEAN</h1>
-                <p className="text-xl text-gray-600">Minimal Aesthetics</p>
+            <div className="relative w-full h-full">
+              <Image
+                src="/images/herobanner2.png"
+                alt="Clean"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-6xl md:text-8xl font-light text-white mb-4">CLEAN</h1>
+                  <p className="text-xl text-white text-opacity-90">Minimal Aesthetics</p>
+                </div>
               </div>
             </div>
           </div>
           
           <div className={`absolute inset-0 transition-opacity duration-1000 ${currentSlide === 2 ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="w-full h-full bg-gradient-to-r from-gray-200 to-gray-50 flex items-center justify-center">
-              <div className="text-center">
-                <h1 className="text-6xl md:text-8xl font-light text-gray-900 mb-4">MODERN</h1>
-                <p className="text-xl text-gray-600">Contemporary Living</p>
+            <div className="relative w-full h-full">
+              <Image
+                src="/images/herobanner3.png"
+                alt="Modern"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-6xl md:text-8xl font-light text-white mb-4">MODERN</h1>
+                  <p className="text-xl text-white text-opacity-90">Contemporary Living</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <div className="mb-8">
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-0.5 bg-gray-900"></div>
-            </div>
-            <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Discover our curated collection of essential items designed for the modern minimalist lifestyle.
-            </p>
-            <a 
-              href="/shop" 
-              className="inline-flex items-center px-8 py-3 border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-300 text-sm uppercase tracking-wider"
-            >
-              Explore Collection
-            </a>
-          </div>
-        </div>
 
         {/* Slide Indicators */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -119,10 +129,15 @@ export default function MinimalistHomePage() {
               </p>
             </div>
             <div className="relative">
-              <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="bg-white rounded-lg flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-                  <p className="text-gray-500 text-sm">Minimalist Showcase</p>
+                  <Image
+                      src="/images/minimalist.png"
+                      alt="Minimalist Showcase"
+                      width={500}
+                      height={500}
+                      className="object-cover square-full"
+                    />
                 </div>
               </div>
             </div>

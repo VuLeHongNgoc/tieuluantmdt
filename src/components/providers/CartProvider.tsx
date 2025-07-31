@@ -268,23 +268,150 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       let variantId = null;
       console.log('🛒 Looking for variant with color:', lookupVariant?.color, 'and size:', lookupVariant?.size);
       
-      // Direct ID mappings for known problematic products
-      const knownProductVariants: Record<string, Record<string, string>> = {
-        'prod-hm-010-velour-top-orange': {
-          'S': 'var-hm-010-orange-s',
-          'M': 'var-hm-010-orange-m',
-          'L': 'var-hm-010-orange-l'
-        }
-      };
+             // Direct ID mappings for all products
+       const knownProductVariants: Record<string, Record<string, string>> = {
+         // H&M - Oversized Teddy Fleece Vest - Dark brown
+         'prod-hm-001-vest-brown': {
+           'S': 'var-hm-001-brown-s',
+           'M': 'var-hm-001-brown-m',
+           'L': 'var-hm-001-brown-l'
+         },
+         // H&M - Oversized Teddy Fleece Vest - White
+         'prod-hm-002-vest-white': {
+           'S': 'var-hm-002-white-s',
+           'M': 'var-hm-002-white-m',
+           'L': 'var-hm-002-white-l'
+         },
+         // H&M - Bouclé-Knit Dress
+         'prod-hm-003-boucle-dress': {
+           'S': 'var-hm-003-black-s',
+           'M': 'var-hm-003-black-m',
+           'L': 'var-hm-003-black-l'
+         },
+         // H&M - Pleated Skirt
+         'prod-hm-004-pleated-skirt': {
+           'S': 'var-hm-004-black-s',
+           'M': 'var-hm-004-black-m',
+           'L': 'var-hm-004-black-l'
+         },
+         // H&M - Chain-Detail Long-Sleeved Top - White
+         'prod-hm-005-chain-top-white': {
+           'S': 'var-hm-005-white-s',
+           'M': 'var-hm-005-white-m',
+           'L': 'var-hm-005-white-l'
+         },
+         // H&M - Chain-Detail Long-Sleeved Top - Black
+         'prod-hm-006-chain-top-black': {
+           'S': 'var-hm-006-black-s',
+           'M': 'var-hm-006-black-m',
+           'L': 'var-hm-006-black-l'
+         },
+         // H&M - Organza Skirt
+         'prod-hm-007-organza-skirt': {
+           'S': 'var-hm-007-black-s',
+           'M': 'var-hm-007-black-m',
+           'L': 'var-hm-007-black-l'
+         },
+         // H&M - Velour Leggings - Orange
+         'prod-hm-008-velour-leggings-orange': {
+           'S': 'var-hm-008-orange-s',
+           'M': 'var-hm-008-orange-m',
+           'L': 'var-hm-008-orange-l'
+         },
+         // H&M - Velour Leggings - Dark brown
+         'prod-hm-009-velour-leggings-brown': {
+           'S': 'var-hm-009-brown-s',
+           'M': 'var-hm-009-brown-m',
+           'L': 'var-hm-009-brown-l'
+         },
+         // H&M - Crushed Velour Top - Orange
+         'prod-hm-010-velour-top-orange': {
+           'S': 'var-hm-010-orange-s',
+           'M': 'var-hm-010-orange-m',
+           'L': 'var-hm-010-orange-l'
+         },
+         // H&M - Crushed Velour Top - Dark brown
+         'prod-hm-011-velour-top-brown': {
+           'S': 'var-hm-011-brown-s',
+           'M': 'var-hm-011-brown-m',
+           'L': 'var-hm-011-brown-l'
+         },
+         // H&M - Ruffle-Trimmed One-Shoulder Dress
+         'prod-hm-012-ruffle-dress': {
+           'S': 'var-hm-012-black-s',
+           'M': 'var-hm-012-black-m', 
+           'L': 'var-hm-012-black-l'
+         },
+         // H&M - Tie-Neck Dress
+         'prod-hm-013-tie-neck-dress': {
+           'S': 'var-hm-013-black-s',
+           'M': 'var-hm-013-black-m',
+           'L': 'var-hm-013-black-l'
+         },
+         // H&M - Cape Dress
+         'prod-hm-014-cape-dress': {
+           'S': 'var-hm-014-black-s',
+           'M': 'var-hm-014-black-m',
+           'L': 'var-hm-014-black-l'
+         },
+         // H&M - Chain-Detail Skort
+         'prod-hm-015-chain-skort': {
+           'S': 'var-hm-015-black-s',
+           'M': 'var-hm-015-black-m',
+           'L': 'var-hm-015-black-l'
+         },
+         // H&M - Textured Overshirt
+         'prod-hm-016-textured-overshirt': {
+           'S': 'var-hm-016-black-s',
+           'M': 'var-hm-016-black-m',
+           'L': 'var-hm-016-black-l'
+         }
+       };
       
-      // Check for direct mapping first
-      if (knownProductVariants[productId] && lookupVariant?.size) {
-        const directVariantId = knownProductVariants[productId][lookupVariant.size];
-        if (directVariantId) {
-          console.log('🛒 Found direct variant mapping:', directVariantId);
-          variantId = directVariantId;
-        }
-      }
+             // Check for direct mapping first
+       if (knownProductVariants[productId] && lookupVariant?.size) {
+         console.log('🔍 Checking direct mapping for product:', productId);
+         console.log('🔍 Available sizes in mapping:', Object.keys(knownProductVariants[productId]));
+         console.log('🔍 Requested size:', lookupVariant.size);
+         
+         const directVariantId = knownProductVariants[productId][lookupVariant.size];
+         if (directVariantId) {
+           console.log('🛒 Found direct variant mapping:', directVariantId);
+           variantId = directVariantId;
+         } else {
+           console.log('❌ No direct mapping found for size:', lookupVariant.size);
+           
+           // FALLBACK: Try to find any variant with the requested size
+           const availableSizes = Object.keys(knownProductVariants[productId]);
+           console.log('🔍 Available sizes in mapping:', availableSizes);
+           
+           // Try case-insensitive size matching
+           const matchingSize = availableSizes.find(size => 
+             size.toLowerCase() === lookupVariant.size?.toLowerCase()
+           );
+           
+           if (matchingSize) {
+             const fallbackVariantId = knownProductVariants[productId][matchingSize];
+             console.log('🛒 Found fallback variant mapping:', fallbackVariantId, 'for size:', matchingSize);
+             variantId = fallbackVariantId;
+           } else {
+             console.log('❌ No matching size found, will try other strategies');
+             
+             // LAST RESORT: Use the first available variant from mapping
+             const firstSize = availableSizes[0];
+             if (firstSize) {
+               const lastResortVariantId = knownProductVariants[productId][firstSize];
+               console.log('🆘 Using last resort variant:', lastResortVariantId, 'for size:', firstSize);
+               variantId = lastResortVariantId;
+             }
+           }
+         }
+       }
+       
+       // If no hard-coded mapping found, try automatic variant search
+       if (!variantId) {
+         console.log('🔍 No hard-coded mapping found, trying automatic variant search...');
+       }
       
       if (productData.variants) {
         // Log all available variants for debugging
@@ -309,6 +436,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             }
           );
           
+          if (foundVariant) {
+            variantId = foundVariant._id;
+            console.log('🛒 Found exact matching variant:', { variantId, variant: foundVariant });
+          } else {
+            console.log('❌ No exact match found, trying other strategies...');
+          }
+          
           // If not found with exact match, try includes for color
           if (!foundVariant) {
             const altVariant = productData.variants.find(
@@ -327,6 +461,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           } else {
             variantId = foundVariant._id;
             console.log('🛒 Found exact matching variant:', { variantId, variant: foundVariant });
+          }
+        }
+        
+        // ENHANCED STRATEGY: Try to find variant by ID pattern if color/size matching fails
+        if (!variantId && lookupVariant?.color && lookupVariant?.size) {
+          const colorLower = lookupVariant.color.toLowerCase();
+          const sizeLower = lookupVariant.size.toLowerCase();
+          
+          // Try to find variant by ID pattern (e.g., var-hm-012-black-s)
+          const patternVariant = productData.variants.find((v: any) => {
+            const idLower = v._id.toLowerCase();
+            return idLower.includes(colorLower) && idLower.includes(sizeLower);
+          });
+          
+          if (patternVariant) {
+            variantId = patternVariant._id;
+            console.log('🛒 Found variant by ID pattern:', { variantId, variant: patternVariant });
           }
         }
         

@@ -1,24 +1,27 @@
 import connectDB from '@/lib/mongodb';
 import mongoose from 'mongoose';
+import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
  * GET /api/users/profile - Get current user profile
- * Note: In a real application, this would use the authenticated session
- * For testing purposes, we'll use a userId from the query parameter
  */
 export async function GET(request: NextRequest) {
   try {
-    // In a real app, this would come from session/auth
-    // For testing purposes, we'll use query param
-    const userId = request.nextUrl.searchParams.get('userId');
+    // Get user from session
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    });
     
-    if (!userId) {
+    if (!token) {
       return NextResponse.json(
-        { success: false, message: 'User ID is required' },
-        { status: 400 }
+        { success: false, message: 'Not authenticated' },
+        { status: 401 }
       );
     }
+    
+    const userId = token.id;
     
     await connectDB();
     const db = mongoose.connection.db;
@@ -45,7 +48,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      user: userWithoutPassword
+      ...userWithoutPassword
     });
   } catch (error: any) {
     console.error(`Error fetching user profile: ${error}`);
