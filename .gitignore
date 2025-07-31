@@ -181,6 +181,7 @@ dist
 Frontend/User-Template/css/sliders/slider-*.css
 Frontend/User-Template/*.html
 Temp/
+Document/
 
 # Keep VS Code extensions recommendation
 !.vscode/extensions.json
